@@ -7,3 +7,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookingRepository extends MongoRepository<Booking, String> {
 }
+  //Mistake:
