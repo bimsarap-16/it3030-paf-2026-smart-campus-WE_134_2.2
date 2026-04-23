@@ -342,3 +342,338 @@ function HeroSection({ setPage }) {
     </section>
   )
 }
+
+/* ───────────────────────────────────────────────
+   ROLE SECTION
+   ─────────────────────────────────────────────── */
+function RoleSection({
+  id,
+  title,
+  description,
+  features,
+  icon: Icon,
+  imagePosition,
+  illustration,
+  bgClass = 'bg-white',
+}) {
+  const isLeft = imagePosition === 'left'
+
+  return (
+    <section id={id} className={`py-24 overflow-hidden ${bgClass}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          className={`flex flex-col ${isLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'
+            } gap-16 items-center`}
+        >
+          {/* Illustration Side */}
+          <motion.div
+            initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
+            className="w-full lg:w-1/2"
+          >
+            <div className="relative">
+              {/* Decorative background blob */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-uni-50 rounded-full blur-3xl -z-10"></div>
+              {illustration}
+            </div>
+          </motion.div>
+
+          {/* Text Content Side */}
+          <motion.div
+            initial={{ opacity: 0, x: isLeft ? 50 : -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.7, ease: 'easeOut', delay: 0.2 }}
+            className="w-full lg:w-1/2 space-y-8"
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-uni-100 text-uni-600 mb-2 shadow-sm">
+              <Icon className="w-8 h-8" />
+            </div>
+
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">
+                {title}
+              </h2>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                {description}
+              </p>
+            </div>
+
+            <ul className="space-y-4">
+              {features.map((feature, index) => (
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                  className="flex items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-50 hover:shadow-md transition-shadow"
+                >
+                  <CheckCircle2Icon className="w-6 h-6 text-uni-500 flex-shrink-0" />
+                  <span className="text-gray-700 font-medium">
+                    {feature}
+                  </span>
+                </motion.li>
+              ))}
+            </ul>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="mt-4 px-6 py-3 rounded-xl bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors shadow-md"
+            >
+              Learn more about {title}
+            </motion.button>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ───────────────────────────────────────────────
+   TESTIMONIALS SECTION
+   ─────────────────────────────────────────────── */
+const testimonials = [
+  {
+    quote:
+      'SmartUni has completely transformed how we manage our daily operations. The admin dashboard is incredibly intuitive.',
+    name: 'Dr. Sarah Jenkins',
+    role: 'University Administrator',
+    avatar: 'SJ',
+  },
+  {
+    quote:
+      'As a lecturer, tracking student progress and managing assignments has never been easier. It saves me hours every week.',
+    name: 'Prof. Michael Chen',
+    role: 'Computer Science Dept.',
+    avatar: 'MC',
+  },
+  {
+    quote:
+      'The student portal is clean and fast. I can always find my course materials and check my grades instantly.',
+    name: 'Emily Rodriguez',
+    role: 'Senior Student',
+    avatar: 'ER',
+  },
+]
+
+function TestimonialsSection() {
+  return (
+    <section className="py-24 bg-uni-50 relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-uni-200 to-transparent"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+          >
+            Trusted by Universities Worldwide
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-lg text-gray-600"
+          >
+            See what administrators, lecturers, and students are saying about
+            their experience with SmartUni.
+          </motion.p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.15 }}
+              whileHover={{ y: -5 }}
+              className="bg-white p-8 rounded-2xl shadow-soft hover:shadow-xl transition-all border border-gray-100 relative group"
+            >
+              <QuoteIcon className="absolute top-6 right-6 w-10 h-10 text-uni-100 group-hover:text-uni-200 transition-colors" />
+
+              <div className="flex gap-1 mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <StarIcon
+                    key={i}
+                    className="w-5 h-5 fill-uni-400 text-uni-400"
+                  />
+                ))}
+              </div>
+
+              <p className="text-gray-700 mb-8 leading-relaxed">
+                &ldquo;{testimonial.quote}&rdquo;
+              </p>
+
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-uni-100 text-uni-700 flex items-center justify-center font-bold text-lg">
+                  {testimonial.avatar}
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">
+                    {testimonial.name}
+                  </h4>
+                  <p className="text-sm text-gray-500">
+                    {testimonial.role}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ───────────────────────────────────────────────
+   FOOTER
+   ─────────────────────────────────────────────── */
+function LandingFooter() {
+  return (
+    <footer
+      id="contact"
+      className="bg-gray-900 text-gray-300 pt-20 pb-10 border-t border-gray-800"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          {/* Brand Col */}
+          <div className="lg:col-span-1 space-y-6">
+            <a href="#home" className="flex items-center gap-2">
+              <div className="bg-uni-600 p-2 rounded-xl">
+                <GraduationCapIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="font-bold text-xl text-white tracking-tight">
+                SmartUni
+              </span>
+            </a>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Empowering educational institutions with intelligent management
+              tools for a brighter future.
+            </p>
+            <div className="flex gap-4">
+              <a
+                href="#"
+                className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-uni-600 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+              </a>
+              <a
+                href="#"
+                className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-uni-600 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
+              </a>
+              <a
+                href="#"
+                className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-uni-600 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /></svg>
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-white font-semibold mb-6">Quick Links</h3>
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href="#features"
+                  className="hover:text-uni-400 transition-colors"
+                >
+                  Features
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#roles"
+                  className="hover:text-uni-400 transition-colors"
+                >
+                  Roles &amp; Solutions
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-uni-400 transition-colors">
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-uni-400 transition-colors">
+                  Documentation
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-white font-semibold mb-6">Legal</h3>
+            <ul className="space-y-4">
+              <li>
+                <a href="#" className="hover:text-uni-400 transition-colors">
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-uni-400 transition-colors">
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-uni-400 transition-colors">
+                  Cookie Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-uni-400 transition-colors">
+                  Security
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-white font-semibold mb-6">Contact Us</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <MailIcon className="w-5 h-5 text-uni-500 mt-0.5" />
+                <span>hello@smartuni.edu</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <PhoneIcon className="w-5 h-5 text-uni-500 mt-0.5" />
+                <span>+1 (555) 123-4567</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <MapPinIcon className="w-5 h-5 text-uni-500 mt-0.5" />
+                <span>
+                  123 Innovation Drive
+                  <br />
+                  Tech District, CA 94103
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
+          <p>
+            &copy; {new Date().getFullYear()} Smart University System. All
+            rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  )
+}
