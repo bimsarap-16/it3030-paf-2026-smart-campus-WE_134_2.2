@@ -677,3 +677,129 @@ function LandingFooter() {
     </footer>
   )
 }
+/* ───────────────────────────────────────────────
+   ANIMATED ILLUSTRATIONS
+   ─────────────────────────────────────────────── */
+const AdminIllustration = () => (
+  <div className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center">
+    <svg viewBox="0 0 400 400" className="w-full h-full">
+      <circle cx="200" cy="200" r="150" fill="#f0fdf4" />
+      <motion.g
+        animate={{ y: [-2, 2, -2] }}
+        transition={{ repeat: Infinity, duration: 4 }}
+      >
+        <path d="M140 320 C140 250, 260 250, 260 320" fill="#16a34a" />
+        <circle cx="200" cy="180" r="35" fill="#e5e7eb" />
+        <path d="M165 180 C165 130, 235 130, 235 180 Z" fill="#1f2937" />
+      </motion.g>
+    </svg>
+  </div>
+)
+
+const LecturerIllustration = () => (
+  <div className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center">
+    <svg viewBox="0 0 400 400" className="w-full h-full">
+      <circle cx="200" cy="200" r="150" fill="#f0fdf4" />
+    </svg>
+  </div>
+)
+
+const StudentIllustration = () => (
+  <div className="relative w-full max-w-md mx-auto flex items-center justify-center">
+    <motion.img
+      src="https://cdn.magicpatterns.com/uploads/sBYRXfk9QWHaxXKxZQ4gcc/image.png"
+      className="w-full"
+      animate={{ y: [-5, 5, -5] }}
+      transition={{ repeat: Infinity, duration: 5 }}
+    />
+  </div>
+)
+
+const TechnicianIllustration = () => (
+  <div className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center">
+    <svg viewBox="0 0 400 400" className="w-full h-full">
+      <circle cx="200" cy="200" r="150" fill="#f0fdf4" />
+    </svg>
+  </div>
+)
+
+/* ───────────────────────────────────────────────
+   LANDING PAGE (main export)
+   ─────────────────────────────────────────────── */
+function LandingPage({ setPage }) {
+  return (
+    <div className="min-h-screen bg-white selection:bg-uni-200 selection:text-uni-900">
+      <LandingNavbar setPage={setPage} />
+
+      <main>
+        <HeroSection setPage={setPage} />
+
+        <div id="roles">
+          <RoleSection
+            id="admin"
+            title="Admin Panel"
+            description="Gain complete control over university operations."
+            features={[
+              'Centralized user management',
+              'Automated scheduling',
+              'Real-time analytics',
+            ]}
+            icon={ShieldCheckIcon}
+            imagePosition="left"
+            illustration={<AdminIllustration />}
+          />
+
+          <RoleSection
+            id="lecturers"
+            title="Lecturers"
+            description="Empower your teaching staff."
+            features={[
+              'Course management',
+              'Assignment workflows',
+              'Student tracking',
+            ]}
+            icon={BookOpenIcon}
+            imagePosition="right"
+            illustration={<LecturerIllustration />}
+            bgClass="bg-gray-50"
+          />
+
+          <RoleSection
+            id="students"
+            title="Students"
+            description="Provide students with a unified portal."
+            features={[
+              'Online learning',
+              'Secure exams',
+              'Instant results',
+            ]}
+            icon={GraduationCapIcon}
+            imagePosition="left"
+            illustration={<StudentIllustration />}
+          />
+
+          <RoleSection
+            id="technicians"
+            title="Technicians"
+            description="Equip your IT team."
+            features={[
+              'System monitoring',
+              'Issue tracking',
+              'Diagnostics tools',
+            ]}
+            icon={WrenchIcon}
+            imagePosition="right"
+            illustration={<TechnicianIllustration />}
+            bgClass="bg-gray-50"
+          />
+        </div>
+
+        <TestimonialsSection />
+      </main>
+
+      <LandingFooter />
+    </div>
+  )
+}
+
+export default LandingPage
