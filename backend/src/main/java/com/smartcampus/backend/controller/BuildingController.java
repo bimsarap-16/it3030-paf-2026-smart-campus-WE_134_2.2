@@ -24,6 +24,18 @@ public class BuildingController {
         return repository.save(building);
     }
 
+    
+    @PutMapping("/{id}")
+    public Building update(@PathVariable String id, @RequestBody Building updated) {
+        updated.setId(id);
+        return repository.save(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id) {
+        repository.deleteById(id);
+    }
+
 
 
 
