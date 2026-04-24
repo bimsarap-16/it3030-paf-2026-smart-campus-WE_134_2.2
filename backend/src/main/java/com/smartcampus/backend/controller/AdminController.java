@@ -2,7 +2,9 @@ package com.smartcampus.backend.controller;
 
 import com.smartcampus.backend.model.Admin;
 import com.smartcampus.backend.repository.AdminRepository;
+import com.smartcampus.backend.util.PasswordValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +29,10 @@ public class AdminController {
     }
 
     @PostMapping
-    public Admin create(@RequestBody Admin admin) {
-        return repository.save(admin);
+    public ResponseEntity<?> create(@RequestBody Admin admin) {
+        if (!PasswordValidator.isValid(admin.getPassword())) {
+            return ResponseEntity.badRequest().body(PasswordValidator.getValidationErrorMessage());
+        }
+        return ResponseEntity.ok(repository.save(admin));
     }
 }
