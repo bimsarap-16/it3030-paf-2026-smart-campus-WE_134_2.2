@@ -61,3 +61,29 @@ const AddResources = ({ setPage }) => {
     setSuccessMsg(msg);
     setTimeout(() => setSuccessMsg(''), 3000);
   };
+
+    const getBuildingName = (id) => buildings.find(b => b.id === id)?.name || 'Unknown';
+
+  // ── Building Actions ────────────────────────────────────────────────────────
+  const handleAddBuilding = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const newBuilding = {
+      name: fd.get('name'),
+      code: fd.get('code'),
+      floors: parseInt(fd.get('floors')),
+      resources: 0,
+    };
+    try {
+      const res = await fetch('http://localhost:8081/api/buildings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBuilding)
+      });
+      const data = await res.json();
+      setBuildings(prev => [...prev, data]);
+      setShowAddBuilding(false);
+      showSuccess(`"${data.name}" has been added successfully!`);
+      e.target.reset();
+    } catch (err) { console.error('Failed to add building', err); }
+  };
