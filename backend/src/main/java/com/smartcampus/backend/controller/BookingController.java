@@ -1,6 +1,5 @@
 package com.smartcampus.backend.controller;
 
-
 import com.smartcampus.backend.model.Booking;
 import com.smartcampus.backend.model.Notification;
 import com.smartcampus.backend.repository.BookingRepository;
@@ -27,8 +26,11 @@ public class BookingController {
 
     @PostMapping
     public Booking create(@RequestBody Booking booking) {
-        // default status
+        // default values
         if(booking.getStatus() == null) booking.setStatus("PENDING");
+        if(booking.getCreatedAt() == null) {
+            booking.setCreatedAt(java.time.LocalDate.now().toString());
+        }
         
         Booking saved = repository.save(booking);
 
