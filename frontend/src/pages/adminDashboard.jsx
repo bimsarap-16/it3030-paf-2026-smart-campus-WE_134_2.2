@@ -102,6 +102,23 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
       setBookings(bookings.map(x => x.id === id ? data : x));
     } catch (err) { console.error(err); }
   };
+   
+      const handleRejectBooking = async () => {
+    const b = bookings.find(x => x.id === selectedItem.id);
+    if (!b) return;
+    try {
+      const res = await fetch(`http://localhost:8081/api/bookings/${selectedItem.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...b, status: 'REJECTED', reason: rejectionReason })
+      });
+      const data = await res.json();
+      setBookings(bookings.map(x => x.id === selectedItem.id ? data : x));
+      setShowRejectModal(false);
+      setRejectionReason('');
+    } catch (err) { console.error(err); }
+  };
+
 
   const removeLecturer = async (id) => {
     try {
