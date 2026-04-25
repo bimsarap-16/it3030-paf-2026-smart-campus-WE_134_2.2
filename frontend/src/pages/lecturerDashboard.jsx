@@ -40,6 +40,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setResourcesList }) => {
   const userName = user?.name || (typeof user === 'string' ? user : 'Guest Lecturer');
+
+  // Added ticket state management
+  //
+  const [activeTab, setActiveTab] = useState('My Tickets');
+  const [tickets, setTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileName, setProfileName] = useState(user?.name || (typeof user === 'string' ? user : ''));
   const [profilePassword, setProfilePassword] = useState('');
@@ -78,6 +87,15 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     }
   };
 
+  // Added API integration for notifications and lecturer tickets
+
+  useEffect(() => {
+    fetch(`http://localhost:8081/api/tickets/lecturer/${userName}`)
+      .then(res => res.json())
+      .then(setTickets)
+      .catch(console.error);
+
+
   useEffect(() => {
     // Initial notifications fetch
     fetch(`http://localhost:8081/api/notifications/user/${userName}`)
@@ -96,6 +114,38 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     return () => clearInterval(nInterval);
   }, [userName]);
 
+ // Added ticket searching and ongoing ticket filtering
+  
+  const filteredTickets = tickets.filter((t) => {
+    const q = searchQuery.toLowerCase();
+
+    return (
+      (t.issue || '').toLowerCase().includes(q) ||
+      (t.issueDesc || '').toLowerCase().includes(q) ||
+      (t.category || '').toLowerCase().includes(q) ||
+      (t.resource || '').toLowerCase().includes(q) ||
+      (t.course || '').toLowerCase().includes(q) ||
+      (t.status || '').toLowerCase().includes(q)
+    );
+  });
+
+  const ongoingTickets = tickets
+    .filter(t =>
+       t.status === 'IN PROGRESS' ||
+      t.status === 'ASSIGNED' ||
+      t.status === 'OPEN'
+    )
+    .filter((t) => {
+      const q = searchQuery.toLowerCase();
+
+      return (
+        (t.issue || '').toLowerCase().includes(q) ||
+        (t.issueDesc || '').toLowerCase().includes(q) ||
+        (t.resource || '').toLowerCase().includes(q) ||
+        (t.category || '').toLowerCase().includes(q) ||
+        (t.course || '').toLowerCase().includes(q)
+      );
+    }); 
   const handleMarkRead = async (id) => {
     try {
       const res = await fetch(`http://localhost:8081/api/notifications/${id}/read`, { method: 'PUT' });
@@ -113,7 +163,41 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
       }
     } catch (err) { console.error(err); }
   };
+ // Added raise ticket feature
+  const handleRaiseTicket = async (e) => {
+    e.preventDefault();
 
+    const formData = new FormData(e.target);
+
+    const newTicket = {
+      lecturer: formData.get('lecturer'),
+      course: formData.get('course'),
+      resource: formData.get('hall'),
+      category: formData.get('category'),
+      issue: formData.get('issueTitle'),
+      issueDesc: formData.get('issueDesc'),
+      priority: formData.get('priority'),
+      status: 'OPEN',
+      progressStatus: 'Not Started',
+    };
+
+    try {
+      const res = await fetch('http://localhost:8081/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTicket),
+      });
+
+      const data = await res.json();
+      setTickets([data, ...tickets]);
+      setShowSuccess(true);
+      e.target.reset();
+      setTimeout(() => setShowSuccess(false), 3000);
+      setActiveTab('My Tickets');
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
