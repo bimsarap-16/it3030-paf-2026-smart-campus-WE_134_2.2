@@ -119,7 +119,7 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
 
         {/* ---------------- TICKETING UI ---------------- */}
 
-        {/* ✅ COMMIT 4: Ticket search + UI */}
+        {/* Ticket search + UI */}
         {activeTab === 'Ticketing' && (
           <div>
 
