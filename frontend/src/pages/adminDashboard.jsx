@@ -419,6 +419,37 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
               </div>
             )}
 
+          {/* Update Resource Modal */}
+      {showUpdateModal && selectedItem && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 bg-transparent">
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl border border-gray-100">
+            <h3 className="text-xl font-bold mb-8">Update Resource</h3>
+            <form onSubmit={handleUpdateResource} className="space-y-6">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Resource Name</label>
+                <input required name="name" defaultValue={selectedItem.name} className="w-full bg-gray-50 border border-gray-50 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-600 transition-all font-bold text-sm" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Seat Capacity</label>
+                <input required name="capacity" type="number" defaultValue={selectedItem.capacity} className="w-full bg-gray-50 border border-gray-50 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-600 transition-all font-bold text-sm" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Current Status</label>
+                <select name="status" defaultValue={selectedItem.status} className="w-full bg-gray-50 border border-gray-50 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-600 transition-all font-bold text-sm">
+                  <option value="AVAILABLE">AVAILABLE</option>
+                  <option value="OCCUPIED">OCCUPIED</option>
+                  <option value="OUT OF SERVICE">OUT OF SERVICE</option>
+                </select>
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button type="button" onClick={() => setShowUpdateModal(false)} className="flex-1 py-4 text-xs font-bold text-gray-400">Cancel</button>
+                <button type="submit" className="flex-1 bg-gray-900 text-white font-bold py-4 rounded-2xl text-xs hover:bg-opacity-90 transition-all">Save Changes</button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
 
                     
 
