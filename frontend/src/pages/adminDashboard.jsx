@@ -37,6 +37,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const AdminDashboard = ({ setPage, user, setUser }) => {
 
   const [activeTab, setActiveTab] = useState('Approve Users');
+  const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -49,6 +50,8 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
   ];
 
   useEffect(() => {
+    fetch('http://localhost:8081/api/buildings').then(res => res.json()).then(setBuildings).catch(console.error);
+    fetch('http://localhost:8081/api/resources').then(res => res.json()).then(setResources).catch(console.error);
     fetch('http://localhost:8081/api/lecturers').then(res => res.json()).then(setLecturers).catch(console.error);
     fetch('http://localhost:8081/api/technicians').then(res => res.json()).then(setTechnicians).catch(console.error);
 
@@ -63,6 +66,37 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
     const nInterval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(nInterval);
   }, []);
+
+  // --- ACTIONS ---
+     const handleDeleteResource = async (id) => {
+    try {
+      await fetch(`http://localhost:8081/api/resources/${id}`, { method: 'DELETE' });
+      setResources(resources.filter(r => r.id !== id));
+      setShowDeleteModal(false);
+    } catch (err) { console.error(err); }
+  };
+
+  const handleUpdateResource = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const updated = {
+      ...selectedItem,
+      name: formData.get('name'),
+      capacity: formData.get('capacity'),
+      status: formData.get('status')
+    };
+    try {
+      const res = await fetch(`http://localhost:8081/api/resources/${selectedItem.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      const data = await res.json();
+      setResources(resources.map(r => r.id === selectedItem.id ? data : r));
+      setShowUpdateModal(false);
+    } catch (err) { console.error(err); }
+  };
+
 
   const handleAddTechnician = async (e) => {
     e.preventDefault();
