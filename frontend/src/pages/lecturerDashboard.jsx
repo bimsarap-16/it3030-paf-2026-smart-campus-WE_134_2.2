@@ -112,10 +112,15 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
 
   // Added API integration for notifications and lecturer tickets
 
-
+ 
 
 
   useEffect(() => {
+
+        fetch('http://localhost:8081/api/bookings')
+      .then(res => res.json())
+      .then(data => setMyBookings(data))
+      .catch(console.error);
 
       fetch(`http://localhost:8081/api/tickets/lecturer/${userName}`)
       .then(res => res.json())
@@ -170,6 +175,24 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
         (t.course || '').toLowerCase().includes(q)
       );
     }); 
+
+
+ const handleCancelBooking = async (id) => {
+    const bookingToUpdate = myBookings.find(b => b.id === id);
+    if (!bookingToUpdate) return;
+    try {
+      const res = await fetch(`http://localhost:8081/api/bookings/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...bookingToUpdate, status: 'CANCELLED' })
+      });
+      const data = await res.json();
+      setMyBookings(myBookings.map(b => b.id === id ? data : b));
+    } catch (err) { console.error(err); }
+  };
+
+
+
   const handleMarkRead = async (id) => {
     try {
       const res = await fetch(`http://localhost:8081/api/notifications/${id}/read`, { method: 'PUT' });
