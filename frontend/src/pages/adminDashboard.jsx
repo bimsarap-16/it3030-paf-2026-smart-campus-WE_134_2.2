@@ -40,9 +40,11 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState('');
-
+   
+  const [bookings, setBookings] = useState([]);
   const [lecturers, setLecturers] = useState([]);
   const [technicians, setTechnicians] = useState([]);
+
 
   const stats = [
     { label: 'Total Users', value: lecturers.length + technicians.length, icon: <Users />, color: 'text-lime-600', bg: 'bg-lime-50' },
