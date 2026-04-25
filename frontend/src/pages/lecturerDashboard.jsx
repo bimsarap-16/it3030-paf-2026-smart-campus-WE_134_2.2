@@ -298,7 +298,7 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
             </button>
           </div>
         </header>
-      </div>
+      
 
       {showProfileModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -353,7 +353,7 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
                       </div>
       
       
-      {/* Capacity Filter */}
+                      {/* Capacity Filter */}
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Capacity</label>
                         <select
@@ -402,6 +402,37 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
                       </div>
                     </div>
 
+
+                       {/* Resource Stats */}
+                          <div className="grid grid-cols-2 gap-3 mb-8">
+                            <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase">Windows</span>
+                              <span className="text-xs font-black text-gray-700">{res.windows} Units</span>
+                            </div>
+                            <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase">Floor</span>
+                              <span className="text-xs font-black text-gray-700">{res.floor || 'G-Floor'}</span>
+                            </div>
+                          </div>
+
+
+                        {/* Countdown Timer for Out of Service */}
+                          {(res.status?.toUpperCase().replace('_', ' ') === 'OUT OF SERVICE' || res.status?.toUpperCase() === 'MAINTENANCE') && (
+                            res.estimatedResolveTime ? (
+                              <CountdownTimer targetDate={res.estimatedResolveTime} />
+                            ) : (
+                              <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-2">
+                                <Info size={16} className="text-gray-400" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recovery time not set</span>
+                              </div>
+                            )
+                          )}
+
+
+
+                          </div>
+                   
+                   
 
 
     
