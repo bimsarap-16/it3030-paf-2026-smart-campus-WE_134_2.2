@@ -69,6 +69,20 @@ const CatalogPage = ({ setPage }) => {
     }
   ];
 
+  const filteredCategories = categories.map(cat => ({
+    ...cat,
+    subcategories: cat.subcategories.filter(sub =>
+      sub.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cat.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  })).filter(cat => cat.subcategories.length > 0 || cat.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const handleSubCategoryClick = (sub) => {
+    setSelectedSubCategory(sub);
+  };
+
+ 
+
 
 
 };
