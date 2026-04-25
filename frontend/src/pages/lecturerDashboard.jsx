@@ -225,6 +225,39 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
       </span>
     );
   };
+  
+
+  const handleDownloadQR = async (booking) => {
+    // Ensure all data points are present to avoid 'undefined' in QR
+    const loc = booking.resource || 'Resource';
+    const bld = booking.building || 'Campus';
+    const dt = booking.date || 'No Date';
+    const tm = booking.time || 'No Time';
+    const lect = booking.lecturer || 'Lecturer';
+
+    // Simplified format for better scanner compatibility
+    const qrData = `UNIVERSITY BOOKING PASS\n-----------------------\nRESOURCE: ${loc}\nLOCATION: ${bld}\nTIME: ${dt} | ${tm}\nLECTURER: ${lect}`;
+    
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}`;
+
+    try {
+      const response = await fetch(qrUrl);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Booking_${loc.replace(/\s+/g, '_')}_QR.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download QR code:', err);
+      // Fallback: Open in new tab if download fails
+      window.open(qrUrl, '_blank');
+    }
+  };
 
 
 
