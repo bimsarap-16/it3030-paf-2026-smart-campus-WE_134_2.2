@@ -338,6 +338,88 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
                     </div>
 
 
+                     {/* 2. CATALOG */}
+            {activeTab === 'Catalog' && (
+              <div className="space-y-8">
+                {selectedBuilding ? (
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="flex items-center gap-4 mb-8">
+                      <button onClick={() => setSelectedBuilding(null)} className="p-2 hover:bg-white rounded-xl transition-all">
+                        <ChevronRight size={20} className="rotate-180" />
+                      </button>
+                      <h3 className="text-xl font-bold">{selectedBuilding.name} - Resources</h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {resources.filter(r => r.buildingId === selectedBuilding.id).map(r => (
+                        <div key={r.id} className="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm group">
+                          <div className="flex justify-between items-start mb-6">
+                            <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                              {r.type === 'Lecture Hall' ? <School size={24} /> : r.type === 'Lab Room' ? <Monitor size={24} /> : <Users size={24} />}
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${r.status === 'AVAILABLE' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}`}>
+                              {r.status}
+                            </span>
+                          </div>
+                          <h4 className="text-lg font-bold mb-1">{r.name}</h4>
+                          <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mb-6">{r.type} | Floor {r.floor}</p>
+
+                          <div className="grid grid-cols-2 gap-4 mb-8">
+                            <div className="bg-gray-50 p-3 rounded-2xl text-center">
+                              <p className="text-[10px] font-bold text-gray-400 mb-1">CAPACITY</p>
+                              <p className="text-sm font-bold tracking-tight">{r.capacity}</p>
+                            </div>
+                            <div className="bg-gray-50 p-3 rounded-2xl text-center">
+                              <p className="text-[10px] font-bold text-gray-400 mb-1">WINDOWS</p>
+                              <p className="text-sm font-bold tracking-tight">{r.windows}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => { setSelectedItem(r); setShowUpdateModal(true); }}
+                              className="flex-1 bg-gray-900 text-white font-bold py-3.5 rounded-2xl text-xs hover:bg-gray-800 transition-all"
+                            >
+                              Update Details
+                            </button>
+                            <button
+                              onClick={() => { setSelectedItem(r); setShowDeleteModal(true); }}
+                              className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {buildings.map(b => (
+                      <div
+                        key={b.id}
+                        onClick={() => setSelectedBuilding(b)}
+                        className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group"
+                      >
+                        <div className="w-16 h-16 bg-gray-50 rounded-[2rem] flex items-center justify-center text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-all mb-8 shadow-inner">
+                          <Building2 size={24} />
+                        </div>
+                        <h3 className="text-lg font-bold mb-1">{b.name}</h3>
+                        <p className="text-xs text-gray-400 font-bold mb-10 tracking-wider">CODE: {b.code}</p>
+
+                        <div className="flex items-center justify-end border-t border-gray-50 pt-6">
+                          <div className="w-10 h-10 rounded-full border border-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-emerald-50 group-hover:border-emerald-100 group-hover:text-emerald-600 transition-all">
+                            <ChevronRight size={18} />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+
                     
 
 
