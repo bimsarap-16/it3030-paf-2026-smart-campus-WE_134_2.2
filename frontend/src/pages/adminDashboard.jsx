@@ -51,6 +51,7 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
   ];
 
   useEffect(() => {
+    fetch('http://localhost:8081/api/bookings').then(res => res.json()).then(setBookings).catch(console.error);
     fetch('http://localhost:8081/api/lecturers').then(res => res.json()).then(setLecturers).catch(console.error);
     fetch('http://localhost:8081/api/technicians').then(res => res.json()).then(setTechnicians).catch(console.error);
 
