@@ -249,6 +249,47 @@ const filterPage = ({ setPage }) => {
             </div>
           ))}
 
+           {filteredRooms.length === 0 && (
+            <div className="col-span-full py-32 flex flex-col items-center justify-center text-center">
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                <X size={32} className="text-gray-200" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No facilities found</h3>
+              <p className="text-gray-400 max-w-xs">We couldn't find any rooms matching your current filter settings. Try adjusting your filters.</p>
+              <button 
+                onClick={() => {
+                  setSelectedCapacity(null);
+                  setSelectedWindows([]);
+                  setSelectedTimes([]);
+                  setSelectedDate('');
+                }}
+                className="mt-8 text-primary font-bold hover:underline py-2 px-6 border-2 border-primary/20 rounded-xl hover:bg-primary/5 transition-all"
+              >
+                Reset all filters
+              </button>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Global CSS for scrollbar */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #3BC1A8;
+          border-radius: 10px;
+        }
+      ` }} />
+    </div>
+  );
+};
+
+
 
 
 
@@ -256,10 +297,5 @@ const filterPage = ({ setPage }) => {
 
         
 
-           </div>
-      </main>
-    </div>
-  );
-};
 
 export default filterPage;
