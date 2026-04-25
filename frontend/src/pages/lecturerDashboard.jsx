@@ -40,6 +40,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setResourcesList }) => {
   const userName = user?.name || (typeof user === 'string' ? user : 'Guest Lecturer');
+
+  // Added ticket state management
+  //
+  const [activeTab, setActiveTab] = useState('My Tickets');
+  const [tickets, setTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileName, setProfileName] = useState(user?.name || (typeof user === 'string' ? user : ''));
   const [profilePassword, setProfilePassword] = useState('');
