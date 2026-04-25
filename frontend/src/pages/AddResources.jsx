@@ -221,7 +221,77 @@ const AddResources = ({ setPage }) => {
   const inputCls = 'w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all placeholder:text-gray-300';
   const labelCls = 'text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 mb-1.5 block';
 
+   return (
+    <div className="min-h-screen bg-[#f8f9fa] font-sans text-gray-800">
 
+      {/* ── Header Bar ──────────────────────────────────────────────── */}
+      <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+          {/* Left: back + title */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setPage && setPage('admin')}
+              className="p-2.5 hover:bg-gray-50 rounded-xl transition-all text-gray-400 hover:text-emerald-600"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 className="text-xl font-extrabold tracking-tight">Add Resources</h1>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Buildings & Facility Management</p>
+            </div>
+          </div>
+
+          {/* Right: search + profile */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 bg-gray-50 px-5 py-2.5 rounded-2xl border border-gray-100 min-w-[300px]">
+              <Search size={16} className="text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search buildings or resources..."
+                className="bg-transparent border-none outline-none text-sm w-full"
+              />
+            </div>
+            <button className="w-11 h-11 bg-white rounded-2xl flex items-center justify-center text-gray-400 hover:text-emerald-600 transition-all border border-gray-100 shadow-sm relative">
+              <Bell size={18} />
+            </button>
+            <div className="w-11 h-11 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-100">
+              <User size={18} />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Main Content ────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-8 py-8">
+
+        {/* Success Banner */}
+        <AnimatePresence>
+          {successMsg && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-6 p-5 bg-green-50 border border-green-100 rounded-2xl flex items-center gap-3 text-green-700 shadow-lg shadow-green-500/5"
+            >
+              <CheckCircle2 size={20} />
+              <p className="text-sm font-bold">{successMsg}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+       
+
+
+
+
+       </div>
+       
+
+       </div>
+    
+    );
   
 };
 
