@@ -556,6 +556,113 @@ const AddResources = ({ setPage }) => {
       </AnimatePresence>
 
 
+       {/* ── Add Resource Modal ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showAddResource && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-gray-100 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="relative p-8 pb-6" style={{ background: 'linear-gradient(135deg, #059669 0%, #047857 100%)' }}>
+                <button onClick={() => setShowAddResource(false)} className="absolute top-6 right-6 p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                  <X size={18} />
+                </button>
+                <div className="w-11 h-11 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl flex items-center justify-center mb-4">
+                  <Plus size={22} className="text-white" />
+                </div>
+                <h3 className="text-white font-black text-2xl tracking-tight">Add New</h3>
+                <h3 className="text-emerald-200 font-black text-2xl tracking-tight">Resource</h3>
+                <p className="text-white/60 text-xs mt-2">Add a lecture hall, lab, or meeting room.</p>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleAddResource} className="p-8 pt-6 space-y-5 max-h-[60vh] overflow-y-auto">
+                <div>
+                  <label className={labelCls}>Resource Name</label>
+                  <input required name="name" type="text" placeholder="e.g. Innovation Lab" className={inputCls} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelCls}>Building</label>
+                    <select
+                      required
+                      name="buildingId"
+                      className={inputCls + ' appearance-none'}
+                      value={selectedBuildingId}
+                      onChange={(e) => setSelectedBuildingId(e.target.value)}
+                    >
+                      <option value="">Select Building</option>
+                      {buildings.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Resource Type</label>
+                    <select required name="type" className={inputCls + ' appearance-none'}>
+                      <option value="">Select Type</option>
+                      <option value="Lecture Hall">Lecture Hall</option>
+                      <option value="Lab Room">Lab Room</option>
+                      <option value="Meeting Room">Meeting Room</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className={labelCls}>Floor</label>
+                    <select required name="floor" className={inputCls + ' appearance-none'}>
+                      <option value="">Select Floor</option>
+                      {selectedBuildingId && (() => {
+                        const b = buildings.find(b => b.id === selectedBuildingId);
+                        if (!b) return null;
+                        return Array.from({ length: b.floors }, (_, i) => (
+                          <option key={i + 1} value={`Floor ${i + 1}`}>Floor {i + 1}</option>
+                        ));
+                      })()}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Capacity</label>
+                    <input required name="capacity" type="number" min="1" placeholder="e.g. 50" className={inputCls} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Windows</label>
+                    <input required name="windows" type="number" min="0" placeholder="e.g. 6" className={inputCls} />
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  <label className={labelCls}>Facility Features</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      'With Multimedia Projector',
+                      'with Recording Cameras',
+                      'with Smart Screen',
+                      'with All Equipment'
+                    ].map((feature) => (
+                      <label key={feature} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl cursor-pointer hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
+                        <input type="checkbox" name="features" value={feature} className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                        <span className="text-[11px] font-bold text-gray-600 group-hover:text-emerald-700 transition-colors">{feature}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-2">
+                  <button type="button" onClick={() => setShowAddResource(false)} className="flex-1 py-4 text-xs font-bold text-gray-400 hover:text-gray-700 rounded-2xl hover:bg-gray-50 transition-all">Cancel</button>
+                  <button type="submit" className="flex-1 bg-emerald-600 text-white font-bold py-4 rounded-2xl text-xs hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-100">Add Resource</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+
 
 
 
