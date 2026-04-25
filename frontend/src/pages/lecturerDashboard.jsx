@@ -38,6 +38,67 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const getResourceIcon = (type) => {
+  switch (type?.toUpperCase()) {
+    case 'LAB ROOM': return <Cpu size={24} />;
+    case 'LECTURE HALL': return <BookOpen size={24} />;
+    case 'MEETING ROOM': return <Zap size={24} />;
+    default: return <LayoutDashboard size={24} />;
+  }
+};
+
+const CountdownTimer = ({ targetDate }) => {
+  const [timeLeft, setTimeLeft] = useState(null);
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = +new Date(targetDate) - +new Date();
+      if (difference <= 0) return null;
+
+      return {
+        d: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        h: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        m: Math.floor((difference / 1000 / 60) % 60),
+        s: Math.floor((difference / 1000) % 60),
+      };
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const timer = setInterval(() => {
+      const remaining = calculateTimeLeft();
+      setTimeLeft(remaining);
+      if (!remaining) clearInterval(timer);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  if (!timeLeft) return (
+    <div className="mt-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-2">
+      <CheckCircle2 size={16} className="text-emerald-500" />
+      <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Recovery Imminent...</span>
+    </div>
+  );
+
+  return (
+    <div className="mt-4 p-4 bg-red-50 rounded-2xl border border-red-100">
+      <div className="flex items-center justify-between mb-2">
+         <span className="text-[10px] font-black text-red-400 uppercase tracking-widest">Estimated Recovery In</span>
+         <Clock size={14} className="text-red-400 animate-pulse" />
+      </div>
+      <div className="flex gap-2">
+        {Object.entries(timeLeft).map(([unit, value]) => (
+          <div key={unit} className="flex flex-col items-center flex-1 bg-white/50 rounded-xl py-2 border border-red-100/50">
+            <span className="text-sm font-black text-red-600">{value}</span>
+            <span className="text-[8px] font-bold text-red-400 uppercase">{unit}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
 const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setResourcesList }) => {
   const userName = user?.name || (typeof user === 'string' ? user : 'Guest Lecturer');
   const [showProfileModal, setShowProfileModal] = useState(false);
