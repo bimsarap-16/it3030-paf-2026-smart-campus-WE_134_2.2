@@ -504,6 +504,59 @@ const AddResources = ({ setPage }) => {
       </div>
 
 
+      {/* ═══════════════════ MODALS ═══════════════════════════════════════════ */}
+
+      {/* ── Add Building Modal ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showAddBuilding && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="relative p-8 pb-6" style={{ background: 'linear-gradient(135deg, #059669 0%, #047857 100%)' }}>
+                <button onClick={() => setShowAddBuilding(false)} className="absolute top-6 right-6 p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                  <X size={18} />
+                </button>
+                <div className="w-11 h-11 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl flex items-center justify-center mb-4">
+                  <Building2 size={22} className="text-white" />
+                </div>
+                <h3 className="text-white font-black text-2xl tracking-tight">Add New</h3>
+                <h3 className="text-emerald-200 font-black text-2xl tracking-tight">Building</h3>
+                <p className="text-white/60 text-xs mt-2">Register a new building to the campus.</p>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleAddBuilding} className="p-8 pt-6 space-y-5">
+                <div>
+                  <label className={labelCls}>Building Name</label>
+                  <input required name="name" type="text" placeholder="e.g. Science Block" className={inputCls} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelCls}>Building Code</label>
+                    <input required name="code" type="text" placeholder="e.g. SB03" className={inputCls} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>No. of Floors</label>
+                    <input required name="floors" type="number" min="1" placeholder="e.g. 5" className={inputCls} />
+                  </div>
+                </div>
+                <div className="flex gap-4 pt-2">
+                  <button type="button" onClick={() => setShowAddBuilding(false)} className="flex-1 py-4 text-xs font-bold text-gray-400 hover:text-gray-700 rounded-2xl hover:bg-gray-50 transition-all">Cancel</button>
+                  <button type="submit" className="flex-1 bg-emerald-600 text-white font-bold py-4 rounded-2xl text-xs hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-100">Add Building</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+
+
 
 
 
