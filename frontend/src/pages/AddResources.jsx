@@ -385,14 +385,134 @@ const AddResources = ({ setPage }) => {
           )}
 
 
+          {/* ── Resources List ─────────────────────────────────────────── */}
+          {activeTab === 'resources' && (
+            <motion.div
+              key="resources"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-extrabold tracking-tight">Resources</h2>
+                  <p className="text-sm text-gray-400 mt-1">All lecture halls, labs, and meeting rooms.</p>
+                </div>
+                <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">{filteredResources.length} Resources</span>
+              </div>
 
+              <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                {/* Table header */}
+                <div className="px-8 py-5 border-b border-gray-50 bg-gray-50/40 grid grid-cols-12 gap-4">
+                  <div className="col-span-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Resource</div>
+                  <div className="col-span-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Building</div>
+                  <div className="col-span-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Type & Floor</div>
+                  <div className="col-span-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Capacity</div>
+                  <div className="col-span-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Windows</div>
+                  <div className="col-span-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Features</div>
+                  <div className="col-span-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</div>
+                  <div className="col-span-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Actions</div>
+                </div>
 
+                {/* Rows */}
+                <div className="divide-y divide-gray-50">
+                  {filteredResources.length === 0 ? (
+                    <div className="py-20 flex flex-col items-center text-center">
+                      <Layers size={36} className="text-gray-200 mb-3" />
+                      <p className="text-gray-400 font-bold text-sm">No resources found</p>
+                    </div>
+                  ) : (
+                    filteredResources.map((r) => (
+                      <div key={r.id} className="px-8 py-5 grid grid-cols-12 gap-4 items-center hover:bg-gray-50/60 transition-colors group">
+                        {/* Name */}
+                        <div className="col-span-2 flex items-center gap-3">
+                          <div className="w-8 h-8 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500">
+                            {resourceIcon(r.type)}
+                          </div>
+                          <p className="text-[13px] font-bold text-gray-900">{r.name}</p>
+                        </div>
 
+                        {/* Building */}
+                        <div className="col-span-1">
+                          <p className="text-[11px] font-bold text-gray-600 flex items-center gap-1">
+                            <MapPin size={10} className="text-emerald-500" />
+                            {getBuildingName(r.buildingId)}
+                          </p>
+                        </div>
 
+                        {/* Type & Floor */}
+                        <div className="col-span-2">
+                          <p className="text-[11px] font-bold text-gray-700">{r.type}</p>
+                          <p className="text-[9px] text-gray-400">{r.floor}</p>
+                        </div>
 
-          
+                        {/* Capacity */}
+                        <div className="col-span-1">
+                          <div className="flex items-center gap-1.5">
+                            <Users size={12} className="text-gray-300" />
+                            <span className="text-[11px] font-bold text-gray-700">{r.capacity}</span>
+                          </div>
+                        </div>
 
+                        {/* Windows */}
+                        <div className="col-span-1">
+                          <span className="text-[11px] font-bold text-gray-700">{r.windows}</span>
+                        </div>
+
+                        {/* Features */}
+                        <div className="col-span-2">
+                          <div className="flex flex-wrap gap-1">
+                            {r.features ? r.features.split(', ').map((f, i) => (
+                              <span key={i} className="px-2 py-0.5 bg-gray-50 text-gray-500 rounded-md text-[8px] font-bold border border-gray-100 whitespace-nowrap">
+                                {f.replace('With ', '').replace('with ', '')}
+                              </span>
+                            )) : <span className="text-[8px] text-gray-300">None</span>}
+                          </div>
+                        </div>
+
+                        {/* Status */}
+                        <div className="col-span-1">
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black border ${statusStyle(r.status)}`}>
+                            {r.status}
+                          </span>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => { setEditTarget(r); setEditType('resource'); setShowEditModal(true); }}
+                            className="p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all"
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => { setDeleteTarget(r); setDeleteType('resource'); setShowDeleteModal(true); }}
+                            className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-600 hover:text-white transition-all"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
+      </div>
+
+
+
+
+
+
+
+
+
+
+       
 
        
 
@@ -402,7 +522,7 @@ const AddResources = ({ setPage }) => {
        </div>
        
 
-       </div>
+       
     
     );
   
