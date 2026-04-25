@@ -50,7 +50,7 @@ const TechnicianDashboard = ({ setPage, user, setUser }) => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
-
+//Added API integration : fetch tickets
   useEffect(() => {
     fetch('http://localhost:8081/api/tickets')
       .then(res => res.json())
@@ -69,6 +69,9 @@ const TechnicianDashboard = ({ setPage, user, setUser }) => {
     return () => clearInterval(nInterval);
   }, []);
 
+   // Added ticket calculations:
+  // counts, date extraction,
+  // search filtering and tab filtering logic
   const openCount = requests.filter(r => r.status === 'OPEN').length;
   const inProgressCount = requests.filter(r => r.status === 'IN PROGRESS').length;
   const resolvedCount = requests.filter(r => r.status === 'RESOLVED').length;
