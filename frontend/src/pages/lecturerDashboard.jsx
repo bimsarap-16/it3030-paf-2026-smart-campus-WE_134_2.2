@@ -420,6 +420,282 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
           </motion.div>
         </div>
       )}
+      
+      {activeTab === 'Booking Resources' && (
+                <div className="space-y-10">
+                  <div className="mt-12 bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm mb-10">
+                    <div className="flex items-center justify-between mb-8">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                          <Filter size={20} />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900">Filter Resources</h3>
+                      </div>
+                      <button
+                        onClick={() => setFilters({
+                          buildingId: '',
+                          capacityRange: '',
+                          windowRange: '',
+                          hallCategory: '',
+                          facility: '',
+                          date: new Date().toISOString().split('T')[0],
+                          selectedSlots: []
+                        })}
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      >
+                        <Eraser size={14} />
+                        Clear All Filters
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                      {/* Building Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Building</label>
+                        <select
+                          value={filters.buildingId}
+                          onChange={(e) => setFilters({ ...filters, buildingId: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Buildings</option>
+                          {buildings.map(b => (
+                            <option key={b.id} value={b.id}>{b.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Hall Category Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Hall Category</label>
+                        <select
+                          value={filters.hallCategory}
+                          onChange={(e) => setFilters({ ...filters, hallCategory: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Categories</option>
+                          <option value="Lecture Hall">Lecture Hall</option>
+                          <option value="Lab Room">Lab Room</option>
+                          <option value="Meeting Room">Meeting Room</option>
+                        </select>
+                      </div>
+
+                      {/* Capacity Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Capacity</label>
+                        <select
+                          value={filters.capacityRange}
+                          onChange={(e) => setFilters({ ...filters, capacityRange: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">Any Capacity</option>
+                          <option value="20-30">20 - 30</option>
+                          <option value="30-60">30 - 60</option>
+                          <option value="60-100">60 - 100</option>
+                          <option value="100-150">100 - 150</option>
+                          <option value="150-200">150 - 200</option>
+                        </select>
+                      </div>
+
+                      {/* Window Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Windows</label>
+                        <select
+                          value={filters.windowRange}
+                          onChange={(e) => setFilters({ ...filters, windowRange: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">Any Windows</option>
+                          <option value="5-10">5 - 10</option>
+                          <option value="10-15">10 - 15</option>
+                          <option value="15-20">15 - 20</option>
+                        </select>
+                      </div>
+
+                      {/* Facility Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Facilities</label>
+                        <select
+                          value={filters.facility}
+                          onChange={(e) => setFilters({ ...filters, facility: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Facilities</option>
+                          <option value="Multimedia Projector">Multimedia Projector</option>
+                          <option value="Recording Camera">Recording Cameras</option>
+                          <option value="Smart Screen">Smart Screen</option>
+                          <option value="All Equipment">All Equipment</option>
+                        </select>
+                      </div>
+                    </div>
+
+
+
+
+                    {/* Date and Time Selection */}
+                    <div className="mt-10 pt-10 border-t border-gray-50 flex flex-col lg:flex-row gap-10">
+                      {/* Date Selection */}
+                      <div className="w-full lg:w-1/4 space-y-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Calendar size={14} className="text-primary" />
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select Date</label>
+                        </div>
+                        <input
+                          type="date"
+                          value={filters.date}
+                          min={new Date().toISOString().split('T')[0]}
+                          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-bold cursor-pointer"
+                        />
+                      </div>
+
+                      {/* Time Slots Selection */}
+                      <div className="w-full lg:w-3/4 space-y-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <Clock size={14} className="text-primary" />
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Available Time Slots</label>
+                          </div>
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full">{filters.selectedSlots.length} Selected</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                          {timeSlots.map((slot) => {
+                            const isSelected = filters.selectedSlots.includes(slot);
+                            return (
+                              <button
+                                key={slot}
+                                onClick={() => {
+                                  const newSlots = isSelected
+                                    ? filters.selectedSlots.filter(s => s !== slot)
+                                    : [...filters.selectedSlots, slot];
+                                  setFilters({ ...filters, selectedSlots: newSlots });
+                                }}
+                                className={`flex items-center gap-3 p-4 rounded-2xl border text-left transition-all group ${isSelected
+                                  ? 'bg-primary border-primary shadow-lg shadow-primary/20 scale-[0.98]'
+                                  : 'bg-white border-gray-100 hover:border-primary/30 hover:bg-gray-50'
+                                  }`}
+                              >
+                                <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${isSelected
+                                  ? 'bg-white border-white'
+                                  : 'bg-gray-50 border-gray-200 group-hover:border-primary/50'
+                                  }`}>
+                                  {isSelected && <CheckCircle2 size={12} className="text-primary" />}
+                                </div>
+                                <span className={`text-[11px] font-bold transition-colors ${isSelected ? 'text-white' : 'text-gray-600'}`}>
+                                  {slot}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-12">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-bold text-gray-900 border-l-4 border-primary pl-4">Available Specific Resources</h3>
+                      <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest bg-white px-4 py-1.5 rounded-full border border-gray-100 shadow-sm">{filteredResources.length} Results Found</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredResources.map((res) => (
+                        <div key={res.id} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all group overflow-hidden relative">
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-[5rem] -mr-8 -mt-8 group-hover:bg-primary transition-all duration-500"></div>
+
+                          <div className="flex justify-between items-start mb-6 relative z-10">
+                            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-white transition-all">
+                              {getResourceIcon(res.type)}
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${res.status === 'AVAILABLE' ? 'bg-green-50/80 text-green-600 border-green-100' : (res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE') ? 'bg-red-50/80 text-red-600 border-red-100' : 'bg-orange-50/80 text-orange-600 border-orange-100'}`}>
+                              {res.status === 'MAINTENANCE' ? 'OUT OF SERVICE' : res.status || 'AVAILABLE'}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900 mb-2 relative z-10">{res.name}</h3>
+                          <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mb-6 relative z-10">{res.type}</p>
+
+                          <div className="flex items-center gap-6 mb-8 relative z-10">
+                            <div className="flex items-center gap-2">
+                              <Users size={14} className="text-primary" />
+                              <span className="text-xs font-bold text-gray-600">{res.capacity} Seats</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin size={14} className="text-primary" />
+                              <span className="text-xs font-bold text-gray-600">{buildings.find(b => b.id === res.buildingId)?.name || 'Main Campus'}</span>
+                            </div>
+                          </div>
+
+                          {/* Resource Stats */}
+                          <div className="grid grid-cols-2 gap-3 mb-8">
+                            <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase">Windows</span>
+                              <span className="text-xs font-black text-gray-700">{res.windows} Units</span>
+                            </div>
+                            <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase">Floor</span>
+                              <span className="text-xs font-black text-gray-700">{res.floor || 'G-Floor'}</span>
+                            </div>
+                          </div>
+
+                          {/* Countdown Timer for Out of Service */}
+                          {(res.status?.toUpperCase().replace('_', ' ') === 'OUT OF SERVICE' || res.status?.toUpperCase() === 'MAINTENANCE') && (
+                            res.estimatedResolveTime ? (
+                              <CountdownTimer targetDate={res.estimatedResolveTime} />
+                            ) : (
+                              <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-2">
+                                <Info size={16} className="text-gray-400" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recovery time not set</span>
+                              </div>
+                            )
+                          )}
+                           
+
+                           //yasith
+                          <button
+                            disabled={res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE' || res.status === 'OUT_OF_SERVICE'}
+
+            
+                            onClick={async () => {
+                              if (filters.selectedSlots.length === 0) {
+                                alert("Please select at least one time slot before booking.");
+                                return;
+                              }
+                              const newBooking = {
+                                resource: res.name,
+                                date: filters.date,
+                                time: filters.selectedSlots.join(', '),
+                                purpose: 'For Lecture',
+                                status: 'PENDING',
+                                building: buildings.find(b => b.id === res.buildingId)?.name || 'Main Campus',
+                                lecturer: userName
+                              };
+                              try {
+                                const response = await fetch('http://localhost:8081/api/bookings', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify(newBooking)
+                                });
+                                const data = await response.json();
+                                setMyBookings([data, ...myBookings]);
+                                setActiveTab('My Bookings');
+                              } catch (err) { console.error(err); }
+                            }}
+                            className={`w-full font-bold py-4 rounded-2xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm ${(res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-opacity-90 shadow-primary/10 shadow-lg'}`}
+                          >
+                            {(res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE') ? 'Out Of Service' : (
+                              <>
+                                <Plus size={18} />
+                                Book This Hall
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              
+
 
     </div>
   );
