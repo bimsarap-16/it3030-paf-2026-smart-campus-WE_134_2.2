@@ -115,7 +115,7 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
   }, [userName]);
 
  // Added ticket searching and ongoing ticket filtering
-  // ============================================
+  
   const filteredTickets = tickets.filter((t) => {
     const q = searchQuery.toLowerCase();
 
@@ -163,7 +163,41 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
       }
     } catch (err) { console.error(err); }
   };
+ // Added raise ticket feature
+  const handleRaiseTicket = async (e) => {
+    e.preventDefault();
 
+    const formData = new FormData(e.target);
+
+    const newTicket = {
+      lecturer: formData.get('lecturer'),
+      course: formData.get('course'),
+      resource: formData.get('hall'),
+      category: formData.get('category'),
+      issue: formData.get('issueTitle'),
+      issueDesc: formData.get('issueDesc'),
+      priority: formData.get('priority'),
+      status: 'OPEN',
+      progressStatus: 'Not Started',
+    };
+
+    try {
+      const res = await fetch('http://localhost:8081/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTicket),
+      });
+
+      const data = await res.json();
+      setTickets([data, ...tickets]);
+      setShowSuccess(true);
+      e.target.reset();
+      setTimeout(() => setShowSuccess(false), 3000);
+      setActiveTab('My Tickets');
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
