@@ -20,7 +20,31 @@ const BookingDetail = ({ booking, setPage, resources }) => {
         </div>
     </div>
   );
+  
+    const resourceData = resources?.find(r => r.name === booking.resource);
+  const capacity = resourceData?.capacity || 'N/A';
+  
+  const qrData = `UNIVERSITY BOOKING PASS\n-----------------------\nRESOURCE: ${booking.resource}\nLOCATION: ${booking.building}\nTIME: ${booking.date} | ${booking.time}\nLECTURER: ${booking.lecturer}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}`;
 
+  const handleDownloadQR = async () => {
+    try {
+      const response = await fetch(qrUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Booking_${booking.resource.replace(/\s+/g, '_')}_QR.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download QR code:', err);
+      window.open(qrUrl, '_blank');
+    }
+  };
+    
   return (
     <div className="min-h-screen bg-[#f8fafc] p-8 font-sans">
       <div className="max-w-7xl mx-auto">
