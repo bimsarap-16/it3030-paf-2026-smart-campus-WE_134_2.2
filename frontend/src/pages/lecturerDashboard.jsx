@@ -99,6 +99,8 @@ const CountdownTimer = ({ targetDate }) => {
 };
 
 
+
+
 const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setResourcesList }) => {
   const userName = user?.name || (typeof user === 'string' ? user : 'Guest Lecturer');
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -139,6 +141,11 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     }
   };
 
+   // Dynamic Data
+   const [resources, setResources] = useState([]);
+  const [buildings, setBuildings] = useState([]);
+
+
   useEffect(() => {
     // Initial notifications fetch
     fetch(`http://localhost:8081/api/notifications/user/${userName}`)
@@ -153,6 +160,21 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
         .then(setNotifications)
         .catch(console.error);
     }, 30000);
+
+    fetch('http://localhost:8081/api/resources')
+      .then(res => res.json())
+      .then(data => {
+        setResources(data);
+        if (setResourcesProp) setResourcesProp(data);
+      })
+      .catch(console.error);
+
+      
+    fetch('http://localhost:8081/api/buildings')
+      .then(res => res.json())
+      .then(data => setBuildings(data))
+      .catch(console.error);
+
 
     return () => clearInterval(nInterval);
   }, [userName]);
@@ -299,7 +321,93 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
         </div>
       )}
 
-    </div>
+       {/* Building Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Building</label>
+                        <select
+                          value={filters.buildingId}
+                          onChange={(e) => setFilters({ ...filters, buildingId: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Buildings</option>
+                          {buildings.map(b => (
+                            <option key={b.id} value={b.id}>{b.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+      
+      {/* Hall Category Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Hall Category</label>
+                        <select
+                          value={filters.hallCategory}
+                          onChange={(e) => setFilters({ ...filters, hallCategory: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Categories</option>
+                          <option value="Lecture Hall">Lecture Hall</option>
+                          <option value="Lab Room">Lab Room</option>
+                          <option value="Meeting Room">Meeting Room</option>
+                        </select>
+                      </div>
+      
+      
+      {/* Capacity Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Capacity</label>
+                        <select
+                          value={filters.capacityRange}
+                          onChange={(e) => setFilters({ ...filters, capacityRange: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">Any Capacity</option>
+                          <option value="20-30">20 - 30</option>
+                          <option value="30-60">30 - 60</option>
+                          <option value="60-100">60 - 100</option>
+                          <option value="100-150">100 - 150</option>
+                          <option value="150-200">150 - 200</option>
+                        </select>
+                      </div>
+
+                      {/* Window Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Windows</label>
+                        <select
+                          value={filters.windowRange}
+                          onChange={(e) => setFilters({ ...filters, windowRange: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">Any Windows</option>
+                          <option value="5-10">5 - 10</option>
+                          <option value="10-15">10 - 15</option>
+                          <option value="15-20">15 - 20</option>
+                        </select>
+                      </div>
+
+                      {/* Facility Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Facilities</label>
+                        <select
+                          value={filters.facility}
+                          onChange={(e) => setFilters({ ...filters, facility: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Facilities</option>
+                          <option value="Multimedia Projector">Multimedia Projector</option>
+                          <option value="Recording Camera">Recording Cameras</option>
+                          <option value="Smart Screen">Smart Screen</option>
+                          <option value="All Equipment">All Equipment</option>
+                        </select>
+                      </div>
+                    </div>
+
+
+
+    
+                    
+
+    
   );
 };
 
