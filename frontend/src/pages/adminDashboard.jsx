@@ -241,7 +241,128 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
         </AnimatePresence>
 
       </div>
+
+
+
+      {/* 3. BOOKINGS */}
+            {activeTab === 'Bookings' && (
+              <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between">
+                  <h3 className="font-bold flex items-center gap-3">
+                    <ShieldAlert size={18} className="text-emerald-600" />
+                    Pending Requests
+                  </h3>
+                  <div className="flex gap-3">
+                    <div className="relative">
+                    <button
+                      onClick={() => setShowFilterMenu(!showFilterMenu)}
+                      className="px-4 py-2 bg-white border rounded-xl text-xs font-bold"
+                    >
+                      {statusFilter === "ALL" ? "Filter Status" : statusFilter}
+                    </button>
+                  
+                    {showFilterMenu && (
+                      <div className="absolute right-0 mt-2 bg-white border rounded-xl shadow-lg">
+                        {["ALL", "PENDING", "APPROVED", "REJECTED"].map(status => (
+                          <div
+                            key={status}
+                            onClick={() => {
+                              setStatusFilter(status);
+                              setShowFilterMenu(false);
+                            }}
+                            className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                          >
+                            {status}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-white">
+                        <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Lecturer & ID</th>
+                        <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Resource</th>
+                        <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Schedule</th>
+                        <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
+                        <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Refer. Logic</th>
+                        <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {bookings
+                          .filter(b => statusFilter === "ALL" || b.status === statusFilter)
+                          .map(b => (
+                        <tr key={b.id} className="hover:bg-gray-50/50 transition-colors group">
+                          <td className="px-8 py-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 font-bold text-xs">{b.lecturer ? b.lecturer.charAt(0) : 'U'}</div>
+                              <div>
+                                <p className="text-sm font-bold">{b.lecturer}</p>
+                                <p className="text-[10px] text-gray-400 font-medium">#{b.id}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-8 py-6">
+                            <p className="text-sm font-bold">{b.resource}</p>
+                            <p className="text-[10px] text-gray-400">{b.building}</p>
+                          </td>
+                          <td className="px-8 py-6">
+                            <div className="flex flex-col">
+                              <span className="text-sm font-bold">{b.date}</span>
+                              <span className="text-[10px] text-emerald-400 font-bold">{b.time}</span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-6">
+                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black tracking-tight border ${b.status === 'PENDING' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
+                              b.status === 'APPROVED' ? 'bg-green-50 text-green-600 border-green-100' :
+                                'bg-red-50 text-red-600 border-red-100'
+                              }`}>
+                              {b.status}
+                            </span>
+                          </td>
+                          <td className="px-8 py-6">
+                            <div className="flex items-center gap-2 group-hover:scale-105 transition-transform cursor-help">
+                              <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                              <span className="text-[10px] font-bold text-gray-400 uppercase">Conflict Free</span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-6">
+                            {b.status === 'PENDING' ? (
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleApproveBooking(b.id)}
+                                  className="p-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                                >
+                                  <Check size={16} strokeWidth={3} />
+                                </button>
+                                <button
+                                  onClick={() => { setSelectedItem(b); setShowRejectModal(true); }}
+                                  className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                >
+                                  <X size={16} strokeWidth={3} />
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] font-bold text-gray-300 uppercase italic">Decision Logged</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
     </div>
+    
+    
+
+
   );
 };
 
