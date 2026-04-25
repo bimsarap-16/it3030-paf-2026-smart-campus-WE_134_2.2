@@ -37,9 +37,9 @@ const progressStatusConfig = {
   'Working On': { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-100' },
   Resolved: { bg: 'bg-green-50', text: 'text-green-600', border: 'border-green-100' },
 };
-
+//Added state management for tickets
 const TechnicianDashboard = ({ setPage, user, setUser }) => {
-  const [activeTab, setActiveTab] = useState('Requests');
+   const [activeTab, setActiveTab] = useState('Requests');
   const [requests, setRequests] = useState([]);
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,6 +49,7 @@ const TechnicianDashboard = ({ setPage, user, setUser }) => {
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+
 
   useEffect(() => {
     fetch('http://localhost:8081/api/tickets')
