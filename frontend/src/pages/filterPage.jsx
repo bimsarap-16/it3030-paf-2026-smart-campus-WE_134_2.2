@@ -60,6 +60,104 @@ const filterPage = ({ setPage }) => {
     return capacityMatch && windowMatch && timeMatch && dateMatch;
   });
 
+  return (
+    <div className="min-h-screen bg-white text-gray-800 font-sans lg:flex">
+      {/* Left Sidebar Filter Panel */}
+      <aside className="lg:w-80 w-full bg-gray-50 border-r border-gray-100 p-8 lg:h-screen lg:overflow-y-auto lg:sticky lg:top-0">
+        <div className="flex items-center gap-2 mb-8 text-primary font-bold text-2xl uppercase tracking-tighter">
+          <Filter size={24} />
+          <span>Filter</span>
+        </div>
+
+        {/* 1. Seat Capacity */}
+        <section className="mb-8 border-b border-gray-100 pb-8">
+          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <Users size={18} className="text-primary" />
+            Seat Capacity
+          </h3>
+          <div className="space-y-3">
+            {capacityOptions.map(option => (
+              <label key={option} className="flex items-center gap-3 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary transition-all cursor-pointer"
+                  checked={selectedCapacity === option}
+                  onChange={() => setSelectedCapacity(selectedCapacity === option ? null : option)}
+                />
+                <span className="text-gray-600 group-hover:text-primary transition-colors">{option} Seats</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        {/* 2. Windows */}
+        <section className="mb-8 border-t border-gray-200 pt-8">
+          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <Monitor size={18} className="text-primary" />
+            Windows
+          </h3>
+          <div className="space-y-3">
+            {windowOptions.map(option => (
+              <label key={option} className="flex items-center gap-3 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary transition-all cursor-pointer"
+                  checked={selectedWindows.includes(option)}
+                  onChange={() => handleCheckboxChange(option, selectedWindows, setSelectedWindows)}
+                />
+                <span className="text-gray-600 group-hover:text-primary transition-colors">{option} Windows</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        {/* 3. Time */}
+        <section className="mb-8 border-t border-gray-200 pt-8">
+          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <CalendarIcon size={18} className="text-primary" />
+            Time
+          </h3>
+          <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+            {timeOptions.map(option => (
+              <label key={option} className="flex items-center gap-3 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary transition-all cursor-pointer"
+                  checked={selectedTimes.includes(option)}
+                  onChange={() => handleCheckboxChange(option, selectedTimes, setSelectedTimes)}
+                />
+                <span className="text-xs text-gray-600 group-hover:text-primary transition-colors">{option}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        {/* 4. Date */}
+        <section className="border-t border-gray-200 pt-8">
+          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <CalendarIcon size={18} className="text-primary" />
+            Select Date
+          </h3>
+          <input 
+            type="date" 
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full bg-white border border-gray-200 rounded-xl p-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm text-gray-600"
+          />
+        </section>
+      </aside>
+
+
+
+
+
+
+      
+      </div>
+
+      );
+
+
   
 
 
