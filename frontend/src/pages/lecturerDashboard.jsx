@@ -47,6 +47,23 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+
+  const filteredBookings = myBookings.filter((b) =>
+    b.resource?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    b.purpose?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    b.status?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+   // Dynamic Data
+  const [myBookings, setMyBookings] = useState([]); //yasith
+  const [resources, setResources] = useState([]);
+  const [buildings, setBuildings] = useState([]);
+
+
+
+
+
   const [showSuccess, setShowSuccess] = useState(false);
 
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -89,14 +106,15 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
 
   // Added API integration for notifications and lecturer tickets
 
+
+
+
   useEffect(() => {
-    fetch(`http://localhost:8081/api/tickets/lecturer/${userName}`)
+
+      fetch(`http://localhost:8081/api/tickets/lecturer/${userName}`)
       .then(res => res.json())
       .then(setTickets)
       .catch(console.error);
-
-
-  useEffect(() => {
     // Initial notifications fetch
     fetch(`http://localhost:8081/api/notifications/user/${userName}`)
       .then(res => res.json())
