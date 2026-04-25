@@ -66,7 +66,7 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
 
   }, []);
 
-  // ✅ COMMIT 3: Added ticket assignment logic
+  // Added ticket assignment logic
   const handleAssignTicket = async (ticketId, techName) => {
     const t = tickets.find(x => x.id === ticketId);
     if (!t) return;
