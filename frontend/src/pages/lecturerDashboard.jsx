@@ -87,6 +87,15 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     }
   };
 
+  // Added API integration for notifications and lecturer tickets
+
+  useEffect(() => {
+    fetch(`http://localhost:8081/api/tickets/lecturer/${userName}`)
+      .then(res => res.json())
+      .then(setTickets)
+      .catch(console.error);
+
+
   useEffect(() => {
     // Initial notifications fetch
     fetch(`http://localhost:8081/api/notifications/user/${userName}`)
