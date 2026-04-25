@@ -58,7 +58,7 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
       .then(setTechnicians)
       .catch(console.error);
 
-    // ✅ COMMIT 2: Fetch ticket data from backend
+    // Fetch ticket data from backend
     fetch('http://localhost:8081/api/tickets')
       .then(res => res.json())
       .then(setTickets)
@@ -104,7 +104,7 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
             Users
           </button>
 
-          {/* ✅ COMMIT 4: Added Ticketing tab */}
+          {/* Added Ticketing tab */}
           <button onClick={() => setActiveTab('Ticketing')}>
             Ticketing
           </button>
@@ -176,7 +176,7 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
 
       </div>
 
-      {/* ✅ COMMIT 5: Ticket Detail Modal */}
+      {/*Ticket Detail Modal */}
       <AnimatePresence>
         {selectedTicket && (
           <TicketDetailModal
