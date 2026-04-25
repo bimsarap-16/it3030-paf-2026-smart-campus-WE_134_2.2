@@ -198,9 +198,31 @@ const AddResources = ({ setPage }) => {
     } catch (err) { console.error(err); }
   };
 
+  // ── Filtered data ──────────────────────────────────────────────────────────
+  const q = searchQuery.toLowerCase();
+  const filteredBuildings = buildings.filter(b => b.name.toLowerCase().includes(q) || b.code.toLowerCase().includes(q));
+  const filteredResources = resources.filter(r => r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q));
 
-    return (
-         );
-         };
+  // ── Status helper ─────────────────────────────────────────────────────────
+  const statusStyle = (s) => {
+    if (s === 'AVAILABLE') return 'bg-green-50 text-green-600 border-green-100';
+    if (s === 'OCCUPIED') return 'bg-orange-50 text-orange-600 border-orange-100';
+    return 'bg-red-50 text-red-600 border-red-100';
+  };
+
+  const resourceIcon = (type) => {
+    if (type === 'Lecture Hall') return <School size={20} />;
+    if (type === 'Lab Room') return <Monitor size={20} />;
+    if (type === 'Meeting Room') return <Mic size={20} />;
+    return <Layers size={20} />;
+  };
+
+  // ── Input class ───────────────────────────────────────────────────────────
+  const inputCls = 'w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all placeholder:text-gray-300';
+  const labelCls = 'text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 mb-1.5 block';
+
+
+  
+};
 
 export default AddResources;
