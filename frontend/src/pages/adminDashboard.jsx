@@ -89,6 +89,20 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
     } catch (err) { console.error(err); }
   };
 
+    const handleApproveBooking = async (id) => {
+    const b = bookings.find(x => x.id === id);
+    if (!b) return;
+    try {
+      const res = await fetch(`http://localhost:8081/api/bookings/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...b, status: 'APPROVED' })
+      });
+      const data = await res.json();
+      setBookings(bookings.map(x => x.id === id ? data : x));
+    } catch (err) { console.error(err); }
+  };
+
   const removeLecturer = async (id) => {
     try {
       await fetch(`http://localhost:8081/api/lecturers/${id}`, { method: 'DELETE' });
