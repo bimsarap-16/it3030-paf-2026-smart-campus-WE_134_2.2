@@ -694,7 +694,71 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
                 </div>
               )}
 
-              
+               {/* 2. My Bookings Tab */}
+              {activeTab === 'My Bookings' && (
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between">
+                    <h3 className="font-bold text-gray-900">Recent Booking Requests</h3>
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white px-4 py-1.5 rounded-full border border-gray-100">
+                      View All History
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-white">
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">ID</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Resource</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Schedule</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Purpose</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                       {filteredBookings.map(b => (
+                         <tr key={b.id} className="hover:bg-gray-50/50 transition-colors group">
+                           <td className="px-8 py-6 text-sm font-bold text-gray-500">{b.id}</td>
+                           <td className="px-8 py-6 text-sm font-bold text-gray-900">{b.resource}</td>
+                           <td className="px-8 py-6">
+                             <div className="flex flex-col">
+                               <span className="text-sm font-bold text-gray-700">{b.date}</span>
+                               <span className="text-[10px] text-gray-400 font-medium">{b.time}</span>
+                             </div>
+                           </td>
+                           <td className="px-8 py-6 text-sm font-medium text-gray-600">{b.purpose}</td>
+                           <td className="px-8 py-6 text-sm">
+                             <StatusBadge status={b.status} />
+                           </td>
+                           <td className="px-8 py-6 text-sm">
+                             {b.status === 'APPROVED' && (
+                               <button
+                                 onClick={() => {
+                                   setSelectedBooking(b);
+                                   setPage('booking-detail');
+                                 }}
+                                 className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-all font-bold text-[10px] uppercase tracking-wider"
+                               >
+                                 <QrCode size={14} />
+                                 View Pass
+                               </button>
+                             )}
+                           </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {myBookings.length === 0 && (
+                    <div className="py-20 flex flex-col items-center justify-center text-center">
+                      <Calendar size={48} className="text-gray-200 mb-4" />
+                      <p className="text-gray-400 font-medium">No bookings found</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+
 
 
     </div>
