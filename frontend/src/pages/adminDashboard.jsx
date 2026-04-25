@@ -450,6 +450,33 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
         </div>
       )}
 
+      {/* Delete/Remove Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 bg-transparent">
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-[2.5rem] w-full max-w-sm p-10 shadow-2xl text-center border border-gray-100">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <ShieldAlert size={32} />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Permanent Action</h3>
+            <p className="text-sm text-gray-400 mb-10">Are you sure you want to remove this record from the system? This cannot be undone.</p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 py-4 text-xs font-bold text-gray-400"
+              >
+                No, Keep it
+              </button>
+              <button
+                onClick={() => handleDeleteResource(selectedItem.id)}
+                className="flex-1 bg-red-600 text-white font-bold py-4 rounded-2xl text-xs shadow-xl shadow-red-100"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
 
                     
 
