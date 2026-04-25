@@ -114,6 +114,38 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     return () => clearInterval(nInterval);
   }, [userName]);
 
+ // Added ticket searching and ongoing ticket filtering
+  // ============================================
+  const filteredTickets = tickets.filter((t) => {
+    const q = searchQuery.toLowerCase();
+
+    return (
+      (t.issue || '').toLowerCase().includes(q) ||
+      (t.issueDesc || '').toLowerCase().includes(q) ||
+      (t.category || '').toLowerCase().includes(q) ||
+      (t.resource || '').toLowerCase().includes(q) ||
+      (t.course || '').toLowerCase().includes(q) ||
+      (t.status || '').toLowerCase().includes(q)
+    );
+  });
+
+  const ongoingTickets = tickets
+    .filter(t =>
+       t.status === 'IN PROGRESS' ||
+      t.status === 'ASSIGNED' ||
+      t.status === 'OPEN'
+    )
+    .filter((t) => {
+      const q = searchQuery.toLowerCase();
+
+      return (
+        (t.issue || '').toLowerCase().includes(q) ||
+        (t.issueDesc || '').toLowerCase().includes(q) ||
+        (t.resource || '').toLowerCase().includes(q) ||
+        (t.category || '').toLowerCase().includes(q) ||
+        (t.course || '').toLowerCase().includes(q)
+      );
+    }); 
   const handleMarkRead = async (id) => {
     try {
       const res = await fetch(`http://localhost:8081/api/notifications/${id}/read`, { method: 'PUT' });
