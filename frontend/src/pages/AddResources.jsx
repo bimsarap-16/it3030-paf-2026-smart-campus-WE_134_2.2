@@ -766,30 +766,59 @@ const AddResources = ({ setPage }) => {
         )}
       </AnimatePresence>
 
+      {/* ── Delete Confirmation Modal ──────────────────────────────────────── */}
+      <AnimatePresence>
+        {showDeleteModal && deleteTarget && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="bg-white rounded-[2.5rem] w-full max-w-sm p-10 shadow-2xl text-center border border-gray-100"
+            >
+              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <ShieldAlert size={32} />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Remove {deleteType === 'building' ? 'Building' : 'Resource'}</h3>
+              <p className="text-sm text-gray-400 mb-2">
+                <span className="font-bold text-gray-700">{deleteTarget.name}</span>
+              </p>
+              <p className="text-xs text-gray-400 mb-10">
+                {deleteType === 'building'
+                  ? 'This will also remove all resources inside this building. This action cannot be undone.'
+                  : 'This resource will be permanently removed from the system.'}
+              </p>
+              <div className="flex gap-4">
+                <button onClick={() => setShowDeleteModal(false)} className="flex-1 py-4 text-xs font-bold text-gray-400">No, Keep it</button>
+                <button
+                  onClick={() => deleteType === 'building' ? handleDeleteBuilding(deleteTarget.id) : handleDeleteResource(deleteTarget.id)}
+                  className="flex-1 bg-red-600 text-white font-bold py-4 rounded-2xl text-xs shadow-xl shadow-red-100"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
-
-
-
-
-
-
-
-
-
-       
-
-       
-
-
-
-
-       </div>
-       
-
-       
-    
-    );
-  
+      {/* Scrollbar styles */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+      ` }} />
+    </div>
+  );
 };
+
+
+
+
+
+
+
 
 export default AddResources;
