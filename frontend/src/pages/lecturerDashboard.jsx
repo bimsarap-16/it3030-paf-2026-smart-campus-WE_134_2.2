@@ -210,6 +210,25 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
       }
     } catch (err) { console.error(err); }
   };
+
+   const StatusBadge = ({ status }) => {
+    const styles = {
+      PENDING: 'bg-yellow-50 text-yellow-600 border-yellow-100',
+      APPROVED: 'bg-green-50 text-green-600 border-green-100',
+      REJECTED: 'bg-red-50 text-red-600 border-red-100',
+      CANCELLED: 'bg-gray-50 text-gray-500 border-gray-100',
+    };
+
+    return (
+      <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${styles[status]}`}>
+        {status}
+      </span>
+    );
+  };
+
+
+
+
  // Added raise ticket feature
   const handleRaiseTicket = async (e) => {
     e.preventDefault();
