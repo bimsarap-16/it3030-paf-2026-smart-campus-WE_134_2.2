@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-//  COMMIT 1: Added Ticket Modal import
+// Added Ticket Modal import
 import TicketDetailModal from '../components/TicketDetailModal';
 
 import {
@@ -41,7 +41,7 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
   const [lecturers, setLecturers] = useState([]);
   const [technicians, setTechnicians] = useState([]);
 
-  // ✅ COMMIT 1: Added ticket state management
+  //  Added ticket state management
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [ticketSearchQuery, setTicketSearchQuery] = useState('');
