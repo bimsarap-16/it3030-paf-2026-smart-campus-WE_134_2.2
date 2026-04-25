@@ -281,6 +281,119 @@ const AddResources = ({ setPage }) => {
           )}
         </AnimatePresence>
 
+         {/* ── Action Buttons ─────────────────────────────────────────── */}
+        <div className="flex items-center gap-4 mb-10">
+          <button
+            onClick={() => { setActiveTab('buildings'); setShowAddBuilding(true); }}
+            className="flex items-center gap-3 px-8 py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all text-sm"
+          >
+            <Building2 size={18} />
+            Add New Building
+          </button>
+          <button
+            onClick={() => { setActiveTab('resources'); setShowAddResource(true); }}
+            className="flex items-center gap-3 px-8 py-4 bg-white text-emerald-600 font-bold rounded-2xl border border-gray-100 shadow-sm hover:border-emerald-200 hover:shadow-md transition-all text-sm"
+          >
+            <Plus size={18} />
+            Add New Resources
+          </button>
+
+          {/* Tab toggle */}
+          <div className="ml-auto flex bg-white p-1.5 rounded-2xl border border-gray-100 shadow-sm">
+            {['buildings', 'resources'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold capitalize transition-all ${activeTab === tab
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100'
+                  : 'text-gray-500 hover:text-gray-900'
+                  }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Buildings List ──────────────────────────────────────────── */}
+        <AnimatePresence mode="wait">
+          {activeTab === 'buildings' && (
+            <motion.div
+              key="buildings"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-extrabold tracking-tight">Buildings</h2>
+                  <p className="text-sm text-gray-400 mt-1">Manage university buildings and facilities.</p>
+                </div>
+                <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">{filteredBuildings.length} Buildings</span>
+              </div>
+
+              <div className="space-y-4">
+                {filteredBuildings.length === 0 ? (
+                  <div className="bg-white rounded-3xl border border-gray-100 shadow-sm py-20 flex flex-col items-center text-center">
+                    <Building2 size={36} className="text-gray-200 mb-3" />
+                    <p className="text-gray-400 font-bold text-sm">No buildings found</p>
+                    <p className="text-gray-300 text-xs mt-1">Add your first building to get started.</p>
+                  </div>
+                ) : (
+                  filteredBuildings.map((b, idx) => (
+                    <motion.div
+                      key={b.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.04 }}
+                      className="bg-white rounded-3xl border border-gray-100 shadow-sm px-8 py-6 flex items-center justify-between group hover:shadow-md hover:border-emerald-100 transition-all"
+                    >
+                      <div className="flex items-center gap-5">
+                        <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                          <Building2 size={22} />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900">{b.name}</h3>
+                          <div className="flex items-center gap-4 mt-1">
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">CODE: {b.code}</span>
+                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">{b.floors} Floors</span>
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">{b.resources} Resources</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => { setEditTarget(b); setEditType('building'); setShowEditModal(true); }}
+                          className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => { setDeleteTarget(b); setDeleteType('building'); setShowDeleteModal(true); }}
+                          className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-600 hover:text-white transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          )}
+
+
+
+
+
+
+
+          
+
+        </AnimatePresence>
+
        
 
 
