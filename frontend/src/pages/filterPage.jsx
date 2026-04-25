@@ -147,19 +147,119 @@ const filterPage = ({ setPage }) => {
         </section>
       </aside>
 
+      {/* Right Content Area */}
+      <main className="flex-1 p-8 lg:p-12">
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setPage('catalog')}
+              className="p-3 bg-gray-100 rounded-2xl text-gray-400 hover:bg-primary/10 hover:text-primary transition-all"
+              title="Back to Catalog"
+            >
+              <ChevronRight size={20} className="rotate-180" />
+            </button>
+            <div>
+              <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Available Facilities</h1>
+              <p className="text-gray-500 mt-1">Found {filteredRooms.length} rooms matching your preference</p>
+            </div>
+          </div>
+          <div className="hidden sm:flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
+             <button className="px-4 py-2 bg-white shadow-sm rounded-lg text-sm font-bold text-gray-900">Grid</button>
+             <button className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700">List</button>
+          </div>
+        </div>
+
+        {/* Results Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {filteredRooms.map(room => (
+            <div key={room.id} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300 overflow-hidden flex flex-col group">
+              <div className={`h-40 ${room.image} relative flex items-center justify-center`}>
+                <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-primary uppercase border border-primary/20">
+                  {room.category}
+                </div>
+                {room.category === 'Lecture Hall' ? <School size={48} className="text-primary/40 group-hover:scale-110 transition-transform" /> : 
+                 room.category === 'Lab Room' ? <Monitor size={48} className="text-primary/40 group-hover:scale-110 transition-transform" /> :
+                 <Users size={48} className="text-primary/40 group-hover:scale-110 transition-transform" />}
+              </div>
+              
+              <div className="p-8 flex-1 flex flex-col">
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">{room.title}</h2>
+                  <div className="flex items-center gap-2 text-gray-400 mt-1">
+                    <MapPin size={14} />
+                    <span className="text-xs">University Main Campus</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-100/50">
+                    <Users size={16} className="text-primary/60" />
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Capacity</span>
+                      <span className="text-sm font-bold text-gray-700">{room.capacity}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-100/50">
+                    <Monitor size={16} className="text-primary/60" />
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Windows</span>
+                      <span className="text-sm font-bold text-gray-700">{room.windows}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center justify-between text-xs py-2 border-b border-gray-50">
+                    <span className="text-gray-400 font-medium">Available Time</span>
+                    <span className="font-bold text-gray-700">{room.time}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs py-2 border-b border-gray-50">
+                    <span className="text-gray-400 font-medium">Selected Date</span>
+                    <span className="font-bold text-gray-700">{room.date}</span>
+                  </div>
+                </div>
+
+                {/* The Purpose Section Dropdown on Card */}
+                <div className="mb-8">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2 block">The Purpose Section</span>
+                  <div className="relative">
+                    <select 
+                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm text-gray-600 appearance-none cursor-pointer pr-10 font-semibold"
+                    >
+                      <option value="">Select Purpose</option>
+                      {purposeOptions.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
+                      <ChevronRight size={18} className="rotate-90" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto flex gap-3">
+                  <button className="flex-1 bg-primary text-white font-bold py-4 rounded-2xl hover:bg-opacity-90 transition-all shadow-lg shadow-primary/20 tracking-wide text-sm">
+                    Book Now
+                  </button>
+                  <button className="p-4 border-2 border-gray-100 text-gray-400 rounded-2xl hover:bg-gray-50 hover:text-primary transition-all">
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
 
 
 
 
 
-      
-      </div>
 
-      );
+        
 
+           </div>
+      </main>
+    </div>
+  );
+};
 
-  
-
-
-
-  };
+export default filterPage;
