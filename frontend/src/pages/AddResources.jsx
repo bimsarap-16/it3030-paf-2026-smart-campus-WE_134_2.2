@@ -662,6 +662,110 @@ const AddResources = ({ setPage }) => {
         )}
       </AnimatePresence>
 
+      {/* ── Edit Modal ────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showEditModal && editTarget && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl border border-gray-100 p-10"
+            >
+              <h3 className="text-xl font-bold mb-8">Update {editType === 'building' ? 'Building' : 'Resource'}</h3>
+
+              {editType === 'building' ? (
+                <form onSubmit={handleEditBuilding} className="space-y-5">
+                  <div>
+                    <label className={labelCls}>Building Name</label>
+                    <input required name="name" defaultValue={editTarget.name} className={inputCls} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelCls}>Code</label>
+                      <input required name="code" defaultValue={editTarget.code} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Floors</label>
+                      <input required name="floors" type="number" defaultValue={editTarget.floors} className={inputCls} />
+                    </div>
+                  </div>
+                  <div className="flex gap-4 pt-4">
+                    <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-4 text-xs font-bold text-gray-400">Cancel</button>
+                    <button type="submit" className="flex-1 bg-gray-900 text-white font-bold py-4 rounded-2xl text-xs hover:bg-opacity-90 transition-all">Save Changes</button>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleEditResource} className="space-y-5">
+                  <div>
+                    <label className={labelCls}>Resource Name</label>
+                    <input required name="name" defaultValue={editTarget.name} className={inputCls} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelCls}>Type</label>
+                      <select required name="type" defaultValue={editTarget.type} className={inputCls + ' appearance-none'}>
+                        <option value="Lecture Hall">Lecture Hall</option>
+                        <option value="Lab Room">Lab Room</option>
+                        <option value="Meeting Room">Meeting Room</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelCls}>Floor</label>
+                      <input required name="floor" defaultValue={editTarget.floor} className={inputCls} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelCls}>Capacity</label>
+                      <input required name="capacity" type="number" defaultValue={editTarget.capacity} className={inputCls} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Windows</label>
+                      <input required name="windows" type="number" defaultValue={editTarget.windows} className={inputCls} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Status</label>
+                    <select required name="status" defaultValue={editTarget.status} className={inputCls + ' appearance-none'}>
+                      <option value="AVAILABLE">AVAILABLE</option>
+                      <option value="OCCUPIED">OCCUPIED</option>
+                      <option value="OUT OF SERVICE">OUT OF SERVICE</option>
+                    </select>
+                  </div>
+                  <div className="space-y-3 pt-2">
+                    <label className={labelCls}>Facility Features</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        'With Multimedia Projector',
+                        'with Recording Cameras',
+                        'with Smart Screen',
+                        'with All Equipment'
+                      ].map((feature) => (
+                        <label key={feature} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl cursor-pointer hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
+                          <input
+                            type="checkbox"
+                            name="features"
+                            value={feature}
+                            defaultChecked={editTarget.features && editTarget.features.includes(feature)}
+                            className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <span className="text-[11px] font-bold text-gray-600 group-hover:text-emerald-700 transition-colors">{feature}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-4 pt-4">
+                    <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-4 text-xs font-bold text-gray-400">Cancel</button>
+                    <button type="submit" className="flex-1 bg-gray-900 text-white font-bold py-4 rounded-2xl text-xs hover:bg-opacity-90 transition-all">Save Changes</button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
 
 
 
