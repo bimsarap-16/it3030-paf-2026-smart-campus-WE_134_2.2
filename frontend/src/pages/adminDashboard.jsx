@@ -40,6 +40,9 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState('');
 
   const [lecturers, setLecturers] = useState([]);
@@ -48,6 +51,11 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
   const stats = [
     { label: 'Total Users', value: lecturers.length + technicians.length, icon: <Users />, color: 'text-lime-600', bg: 'bg-lime-50' },
   ];
+
+  // --- Dummy dara ---
+
+  const [buildings, setBuildings] = useState([]);
+  const [resources, setResources] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:8081/api/buildings').then(res => res.json()).then(setBuildings).catch(console.error);
@@ -193,12 +201,14 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex font-sans text-gray-800">
-
+       {/* Sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-gray-100 flex flex-col z-30 shadow-sm">
         <div className="p-8">
 
           <nav className="space-y-2">
             {[
+              { id: 'Overview', icon: <LayoutDashboard size={18} /> },
+              { id: 'Catalog', icon: <Building2 size={18} /> },
               { id: 'Approve Users', icon: <CheckCircle2 size={18} /> },
               { id: 'Users', icon: <Users size={18} /> },
             ].map((tab) => (
@@ -214,8 +224,8 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
               </button>
             ))}
           </nav>
-
         </div>
+        
       </aside>
 
       <div className="flex-1 ml-64 p-8">
@@ -240,6 +250,101 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
           </motion.div>
         </AnimatePresence>
 
+
+        {/* Dynamic Title */}
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-extrabold tracking-tight">{activeTab}</h2>
+            <p className="text-sm text-gray-400 mt-1">Management dashboard for university facilities and users.</p>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setPage && setPage('addresources')}
+              className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-emerald-100 flex items-center gap-2"
+            >
+              <Plus size={14} /> Add Resources
+            </button>
+          </div>
+        </div>
+
+            {/* Analysis Column */}
+                  <div className="space-y-8">
+                    {/* Usage Analysis Card */}
+                    <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col">
+                      <h3 className="font-bold mb-8 flex items-center gap-2">
+                        <BarChart3 size={20} className="text-emerald-600" />
+                        Usage Analysis
+                      </h3>
+                      
+                      {bookings.length > 0 ? (
+                        <div className="flex-1 flex flex-col">
+                          <div className="bg-emerald-50/50 rounded-3xl p-8 mb-8 text-center border border-emerald-50">
+                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-3">Most Booked Last Week</p>
+                            <h4 className="text-3xl font-black text-gray-900 mb-2">
+                              {(() => {
+                                const counts = {};
+                                bookings.forEach(b => {
+                                  counts[b.resource] = (counts[b.resource] || 0) + 1;
+                                });
+                                const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+                                return top ? top[0] : 'N/A';
+                              })()}
+                            </h4>
+                            <p className="text-sm text-gray-400 font-medium">
+                              {(() => {
+                                const counts = {};
+                                bookings.forEach(b => {
+                                  counts[b.resource] = (counts[b.resource] || 0) + 1;
+                                });
+                                const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+                                return top ? `${top[1]} bookings in total` : 'No data';
+                              })()}
+                            </p>
+                          </div>
+
+                          <div className="space-y-4">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Top Resources</p>
+                            {Object.entries(
+                              bookings.reduce((acc, b) => {
+                                acc[b.resource] = (acc[b.resource] || 0) + 1;
+                                return acc;
+                              }, {})
+                            )
+                            .sort((a, b) => b[1] - a[1])
+                            .slice(0, 3)
+                            .map(([name, count], i) => (
+                              <div key={i} className="flex items-center gap-4">
+                                <div className="flex-1 h-2 bg-gray-50 rounded-full overflow-hidden">
+                                  <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${(count / bookings.length) * 100}%` }}
+                                    className="h-full bg-emerald-500 rounded-full"
+                                  />
+                                </div>
+                                <span className="text-[10px] font-bold text-gray-500 w-24 truncate">{name}</span>
+                                <span className="text-[10px] font-black text-emerald-600">{count}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
+                          <div className="w-16 h-16 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-4">
+                            <BarChart3 size={32} />
+                          </div>
+                          <p className="text-sm font-bold text-gray-400 italic">Collecting data...</p>
+                        </div>
+                      )}
+                    </div>
+
+
+                    
+
+
+                    
+
+
+      </div>
       </div>
     </div>
   );
