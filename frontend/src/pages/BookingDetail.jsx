@@ -1,4 +1,12 @@
 import React from 'react';
+import { 
+  ChevronLeft, 
+  MapPin, 
+  Users, 
+  Calendar, 
+  Clock, 
+  Download
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const BookingDetail = ({ booking, setPage, resources }) => {
