@@ -60,6 +60,8 @@ const filterPage = ({ setPage }) => {
     return capacityMatch && windowMatch && timeMatch && dateMatch;
   });
 
+  
+
 
 
   };
