@@ -11,12 +11,13 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.unifacility</groupId>
+    <groupId>com.smartcampus</groupId>
     <artifactId>backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>backend</name>
-    <description>UniFacility Backend</description>
+    <description>smartcampus Backend</description>
 
+   
     <properties>
         <java.version>17</java.version>
     </properties>

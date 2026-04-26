@@ -67,6 +67,7 @@ const BuildingIllustration = () => (
     <circle cx="310" cy="60" r="7" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
   </svg>
 );
+
 // ── Feature pill ────────────────────────────────────────────────────────────
 const FeaturePill = ({ icon, label }) => (
   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full">
@@ -75,10 +76,14 @@ const FeaturePill = ({ icon, label }) => (
   </div>
 );
 
+
 // ── Main Component ──────────────────────────────────────────────────────────
 const LoginPage = ({ setPage, setUser }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [credentials, setCredentials] = useState({
+  lecturer: { username: '', password: '' },
+  technician: { username: '', password: '' },
+  admin: { username: '', password: '' }
+  });
   const [showPass, setShowPass] = useState(false);
   const [role, setRole] = useState('lecturer');
   const [loading, setLoading] = useState(false);
@@ -99,6 +104,22 @@ const LoginPage = ({ setPage, setUser }) => {
   const [regSuccess, setRegSuccess] = useState(false);
   const [regRole, setRegRole] = useState('lecturer');
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMsg, setForgotMsg] = useState('');
+
+  const [otpStep, setOtpStep] = useState(1);
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+
+  const validatePassword = (pass) => {
+    if (pass.length < 8) return 'Password must be at least 8 characters.';
+    if (!/[A-Z]/.test(pass)) return 'Password must include at least one capital letter.';
+    if (!/[a-z]/.test(pass)) return 'Password must include at least one simple letter.';
+    return null;
+  };
 
   // Google OAuth handler
   const handleGoogleAuth = async (credentialResponse, authRole) => {
@@ -163,8 +184,9 @@ const LoginPage = ({ setPage, setUser }) => {
       setRegError('Passwords do not match.');
       return;
     }
-    if (regPassword.length < 6) {
-      setRegError('Password must be at least 6 characters.');
+    const passError = validatePassword(regPassword);
+    if (passError) {
+      setRegError(passError);
       return;
     }
     setRegLoading(true);
@@ -192,6 +214,7 @@ const LoginPage = ({ setPage, setUser }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    const { username, password } = credentials[role];
     if (!username.trim() || !password.trim()) {
       setError('Please enter both username and password.');
       return;
@@ -247,6 +270,84 @@ const LoginPage = ({ setPage, setUser }) => {
       setError('Network error. Please try again later.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+      if (!forgotEmail) {
+        setForgotMsg('Enter email');
+        return;
+      }
+
+        setOtpLoading(true); 
+        setForgotMsg('');
+    
+      try {
+        let endpoint = "";
+
+        if (role === "technician") {
+          endpoint = "technicians";
+        } else {
+          endpoint = "lecturers";
+        }
+
+          const res = await fetch(`http://localhost:8081/api/${endpoint}/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: forgotEmail })
+        });
+    
+        const data = await res.text();
+        setForgotMsg(data);
+    
+        if (data === "OTP sent") {
+          setOtpStep(2); // 👉 move to OTP step
+        }
+    
+      } catch {
+        setForgotMsg('Server error');
+      }finally {
+        setOtpLoading(false); 
+      }
+    };
+
+  const handleResetPassword = async () => {
+    try {
+      let endpoint = "";
+
+      if (role === "technician") {
+        endpoint = "technicians";
+      } else {
+        endpoint = "lecturers";
+      }
+
+      const passError = validatePassword(newPassword);
+      if (passError) {
+        setForgotMsg(passError);
+        return;
+      }
+
+      const res = await fetch(`http://localhost:8081/api/${endpoint}/reset-password`, {
+      method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: forgotEmail,
+          otp: otp,
+          newPassword: newPassword
+        })
+      });
+  
+      const data = await res.text();
+      setForgotMsg(data);
+  
+      if (data === "Password updated") {
+        setTimeout(() => {
+          setShowForgot(false);
+        }, 1500);
+      }
+  
+    } catch {
+      setForgotMsg('Error resetting password');
     }
   };
 
@@ -381,10 +482,20 @@ const LoginPage = ({ setPage, setUser }) => {
               </label>
               <div className="relative">
                 <input
+                  key={role + '-username'}
                   id="username"
-                  type="text"
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  name="username"
+                  type="email"
+                  value={credentials[role].username}
+                  onChange={(e) =>
+                    setCredentials({
+                      ...credentials,
+                      [role]: {
+                        ...credentials[role],
+                        username: e.target.value
+                      }
+                    })
+                  }
                   placeholder="Enter your username"
                   autoComplete="username"
                   className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all shadow-sm placeholder:text-gray-300"
@@ -400,17 +511,34 @@ const LoginPage = ({ setPage, setUser }) => {
                 </label>
                 <button
                   type="button"
-                  className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors tracking-wide"
+                  onClick={() => {
+                    setShowForgot(true);
+                    setOtpStep(1);
+                    setOtp('');
+                    setNewPassword('');
+                    setForgotMsg('');
+                  }}
+                  className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700"
                 >
                   Forgot Password?
                 </button>
               </div>
               <div className="relative">
                 <input
+                  key={role + '-password'}
                   id="password"
+                  name="password" 
                   type={showPass ? 'text' : 'password'}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  value={credentials[role].password}
+                  onChange={(e) =>
+                    setCredentials({
+                      ...credentials,
+                      [role]: {
+                        ...credentials[role],
+                        password: e.target.value
+                      }
+                    })
+                  }
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 pr-14 text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all shadow-sm placeholder:text-gray-300"
@@ -753,6 +881,96 @@ const LoginPage = ({ setPage, setUser }) => {
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
       ` }} />
+      
+      {/* ✅ ADD POPUP HERE (INSIDE MAIN DIV) */}
+        {showForgot && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-3xl w-[420px] shadow-2xl">
+               <div className="flex items-start gap-3 mb-5">
+  
+                {/* Icon */}
+                <div className="bg-gray-100 p-3 rounded-full">
+                  🔒
+                </div>
+              
+                {/* Text */}
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Reset Your Password
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Enter your registered email address below, and we'll send you a OTP code to reset your password.
+                  </p>
+                </div>
+              
+              </div>
+    
+              <h3 className="font-bold mb-3">Reset With Email </h3>
+    
+              {otpStep === 1 && (
+          <>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              className="w-full border px-3 py-2 rounded mb-3"
+            />
+        
+            <button
+              onClick={handleForgotPassword}
+              disabled={otpLoading}
+              className={`w-full py-2 rounded text-white ${
+                otpLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-emerald-600'
+              }`}
+            >
+              {otpLoading ? 'Generating OTP...' : 'Send OTP'}
+            </button>
+          </>
+        )}
+        
+        {otpStep === 2 && (
+          <>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              className="w-full border px-3 py-2 rounded mb-2"
+            />
+        
+            <input
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full border px-3 py-2 rounded mb-3"
+            />
+        
+            <button
+              onClick={handleResetPassword}
+              className="w-full bg-green-600 text-white py-2 rounded"
+            >
+              Reset Password
+            </button>
+          </>
+        )}
+    
+              {forgotMsg && (
+                <p className={`text-xs mt-2 ${forgotMsg.includes("OTP") || forgotMsg.includes("updated") ? "text-green-600" : "text-red-500"}`}>
+                  {forgotMsg}
+                </p>
+              )}
+    
+              <button
+                onClick={() => setShowForgot(false)}
+                className="text-xs text-gray-400 mt-3"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

@@ -15,7 +15,8 @@ public class Technician {
     private String password;
     private String status; 
     private String resetOtp;
-    private Long otpExpiry;// PENDING, APPROVED, REJECTED
+    private Long otpExpiry;
+    // PENDING, APPROVED, REJECTED
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
