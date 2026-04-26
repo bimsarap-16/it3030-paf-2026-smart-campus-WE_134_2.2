@@ -72,6 +72,11 @@ const TechnicianDashboard = ({ setPage, user, setUser }) => {
         .catch(console.error);
     };
 
+     fetch('http://localhost:8081/api/resources')
+      .then(res => res.json())
+      .then(setResources)
+      .catch(console.error);
+
     fetchNotifications();
     const nInterval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(nInterval);
@@ -93,6 +98,41 @@ const TechnicianDashboard = ({ setPage, user, setUser }) => {
         setNotifications(notifications.map(n => ({ ...n, read: true })));
       }
     } catch (err) { console.error(err); }
+  };
+
+  // Tab counts for display
+  const tabRequests = activeTab === 'Requests'
+    ? filteredRequests.filter(r => r.status === 'OPEN')
+    : activeTab === 'Ongoing'
+      ? filteredRequests.filter(r => r.status === 'IN PROGRESS' || r.status === 'ASSIGNED' || r.status === 'OPEN')
+      : activeTab === 'Out Of Service'
+        ? resources.filter(res => res.status === 'OUT OF SERVICE' || res.status === 'OUT_OF_SERVICE')
+      : filteredRequests.filter(r => r.status === 'RESOLVED');
+
+
+       const handleUpdateResourceTime = async (id, time) => {
+    const resrc = resources.find(r => String(r.id) === String(id));
+    if (!resrc) return;
+    setSavingId(id);
+    try {
+      const updated = { ...resrc, estimatedResolveTime: time };
+      console.log('Saving resource recovery time:', updated);
+      const res = await fetch(`http://localhost:8081/api/resources/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log('Successfully saved:', data);
+        setResources(prev => prev.map(r => String(r.id) === String(id) ? data : r));
+        setSavedId(id);
+        setTimeout(() => setSavedId(null), 3000);
+      } else {
+        console.error('Failed to save resource time:', await res.text());
+      }
+    } catch (err) { console.error('Resource Update Error:', err); }
+    finally { setSavingId(null); }
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
