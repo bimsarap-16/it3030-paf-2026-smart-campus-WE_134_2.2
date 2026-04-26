@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+
+// Added Ticket Modal import
+import TicketDetailModal from '../components/TicketDetailModal';
+
 import {
-  BarChart3,
   Building2,
   Calendar,
   Ticket,
@@ -10,47 +13,47 @@ import {
   User,
   LayoutDashboard,
   Plus,
-  Edit2,
   Trash2,
   CheckCircle2,
-  XCircle,
-  ArrowRight,
-  Filter,
   MapPin,
   Clock,
   AlertCircle,
-  MoreVertical,
   ChevronRight,
   ShieldAlert,
   Wrench,
   Check,
   X,
-  History,
   Monitor,
   School,
-  Mic,
   LogOut,
   Zap
 } from 'lucide-react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminDashboard = ({ setPage, user, setUser }) => {
 
   const [activeTab, setActiveTab] = useState('Approve Users');
+<<<<<<< HEAD
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+=======
+
+  const [notifications, setNotifications] = useState([]);
+>>>>>>> feature/dias/ticket-management
   const [userSearchQuery, setUserSearchQuery] = useState('');
 
   const [lecturers, setLecturers] = useState([]);
   const [technicians, setTechnicians] = useState([]);
 
-  const stats = [
-    { label: 'Total Users', value: lecturers.length + technicians.length, icon: <Users />, color: 'text-lime-600', bg: 'bg-lime-50' },
-  ];
+  //  Added ticket state management
+  const [tickets, setTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [ticketSearchQuery, setTicketSearchQuery] = useState('');
 
   // --- Dummy dara ---
 
@@ -58,23 +61,33 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
   const [resources, setResources] = useState([]);
 
   useEffect(() => {
+<<<<<<< HEAD
     fetch('http://localhost:8081/api/buildings').then(res => res.json()).then(setBuildings).catch(console.error);
     fetch('http://localhost:8081/api/resources').then(res => res.json()).then(setResources).catch(console.error);
     fetch('http://localhost:8081/api/lecturers').then(res => res.json()).then(setLecturers).catch(console.error);
     fetch('http://localhost:8081/api/technicians').then(res => res.json()).then(setTechnicians).catch(console.error);
+=======
+>>>>>>> feature/dias/ticket-management
 
-    const fetchNotifications = () => {
-      fetch('http://localhost:8081/api/notifications/user/ADMIN')
-        .then(res => res.json())
-        .then(setNotifications)
-        .catch(console.error);
-    };
+    fetch('http://localhost:8081/api/lecturers')
+      .then(res => res.json())
+      .then(setLecturers)
+      .catch(console.error);
 
-    fetchNotifications();
-    const nInterval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(nInterval);
+    fetch('http://localhost:8081/api/technicians')
+      .then(res => res.json())
+      .then(setTechnicians)
+      .catch(console.error);
+
+    // Fetch ticket data from backend
+    fetch('http://localhost:8081/api/tickets')
+      .then(res => res.json())
+      .then(setTickets)
+      .catch(console.error);
+
   }, []);
 
+<<<<<<< HEAD
   // --- ACTIONS ---
      const handleDeleteResource = async (id) => {
     try {
@@ -115,91 +128,33 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
       spec: formData.get('spec'),
       empId: formData.get('empId')
     };
+=======
+  // Added ticket assignment logic
+  const handleAssignTicket = async (ticketId, techName) => {
+    const t = tickets.find(x => x.id === ticketId);
+    if (!t) return;
+>>>>>>> feature/dias/ticket-management
 
     try {
-      const res = await fetch('http://localhost:8081/api/technicians', {
-        method: 'POST',
+      const res = await fetch(`http://localhost:8081/api/tickets/${ticketId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newTech)
+        body: JSON.stringify({
+          ...t,
+          status: 'ASSIGNED',
+          assignedTo: techName
+        })
       });
+
       const data = await res.json();
-      setTechnicians([...technicians, data]);
-      e.target.reset();
-    } catch (err) { console.error(err); }
-  };
-
-  const removeLecturer = async (id) => {
-    try {
-      await fetch(`http://localhost:8081/api/lecturers/${id}`, { method: 'DELETE' });
-      setLecturers(lecturers.filter(l => l.id !== id));
-    } catch (err) { console.error(err); }
-  };
-
-  const handleApproveTech = async (id) => {
-    try{
-    await fetch(`http://localhost:8081/api/technicians/${id}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify("APPROVED")
-    });
-    setTechnicians(technicians.map(t => t.id === id ? { ...t, status: 'APPROVED' } : t));
-     } catch (err) { console.error(err); }
-  };
-
-  const handleRejectTech = async (id) => {
-     try {
-    await fetch(`http://localhost:8081/api/technicians/${id}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify("REJECTED")
-    });
-    setTechnicians(technicians.map(t => t.id === id ? { ...t, status: 'REJECTED' } : t));
-     } catch (err) { console.error(err); }
-  };
-
-  const handleApproveLecturer = async (id) => {
-     try {
-    await fetch(`http://localhost:8081/api/lecturers/${id}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify("APPROVED")
-    });
-    setLecturers(lecturers.map(l => l.id === id ? { ...l, status: 'APPROVED' } : l));
-     } catch (err) { console.error(err); }
-  };
-
-  const handleRejectLecturer = async (id) => {
-     try {
-    await fetch(`http://localhost:8081/api/lecturers/${id}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify("REJECTED")
-    });
-    setLecturers(lecturers.map(l => l.id === id ? { ...l, status: 'REJECTED' } : l));
-    } catch (err) { console.error(err); }
-  };
-
-  const handleMarkRead = async (id) => {
-    try {
-    const res = await fetch(`http://localhost:8081/api/notifications/${id}/read`, { method: 'PUT' });
-    if (res.ok) {
-      setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
+      setTickets(tickets.map(x => x.id === ticketId ? data : x));
+    } catch (err) {
+      console.error(err);
     }
-    } catch (err) { console.error(err); }
   };
-
-  const handleMarkAllRead = async () => {
-    try {
-    const res = await fetch(`http://localhost:8081/api/notifications/user/ADMIN/read-all`, { method: 'PUT' });
-    if (res.ok) {
-      setNotifications(notifications.map(n => ({ ...n, read: true })));
-    }
-    } catch (err) { console.error(err); }
-  };
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
+<<<<<<< HEAD
     <div className="min-h-screen bg-[#f8f9fa] flex font-sans text-gray-800">
        {/* Sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-gray-100 flex flex-col z-30 shadow-sm">
@@ -226,29 +181,91 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
           </nav>
         </div>
         
+=======
+    <div className="min-h-screen flex">
+
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r p-6">
+        <nav className="space-y-2">
+
+          <button onClick={() => setActiveTab('Approve Users')}>
+            Approve Users
+          </button>
+
+          <button onClick={() => setActiveTab('Users')}>
+            Users
+          </button>
+
+          {/* Added Ticketing tab */}
+          <button onClick={() => setActiveTab('Ticketing')}>
+            Ticketing
+          </button>
+
+        </nav>
+>>>>>>> feature/dias/ticket-management
       </aside>
 
-      <div className="flex-1 ml-64 p-8">
+      {/* Main */}
+      <div className="flex-1 p-6">
 
-        <header className="flex items-center justify-between mb-8"></header>
+        <h2>{activeTab}</h2>
 
-        <AnimatePresence>
-          <motion.div>
+        {/* ---------------- TICKETING UI ---------------- */}
 
-            {activeTab === 'Approve Users' && (
-              <div className="space-y-8">
-                {/* unchanged content */}
-              </div>
-            )}
+        {/* Ticket search + UI */}
+        {activeTab === 'Ticketing' && (
+          <div>
 
-            {activeTab === 'Users' && (
-              <div className="space-y-8">
-                {/* unchanged content */}
-              </div>
-            )}
+            {/* Search */}
+            <input
+              type="text"
+              placeholder="Search tickets..."
+              value={ticketSearchQuery}
+              onChange={(e) => setTicketSearchQuery(e.target.value)}
+            />
 
-          </motion.div>
-        </AnimatePresence>
+            {/* Ticket Cards */}
+            <div>
+
+              {tickets
+                .filter(t =>
+                  t.issue?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                  t.resource?.toLowerCase().includes(ticketSearchQuery.toLowerCase())
+                )
+                .map(t => (
+
+                  <div key={t.id}>
+
+                    <h3>{t.issue}</h3>
+                    <p>{t.resource}</p>
+
+                    <p>Lecturer: {t.lecturer}</p>
+                    <p>Assigned: {t.assignedTo || 'None'}</p>
+
+                    {/* Assign Technician */}
+                    <select
+                      onChange={(e) => handleAssignTicket(t.id, e.target.value)}
+                    >
+                      <option>Assign Tech</option>
+                      {technicians.map(tech => (
+                        <option key={tech.id} value={tech.name}>
+                          {tech.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Open modal */}
+                    <button onClick={() => setSelectedTicket(t)}>
+                      View Ticket
+                    </button>
+
+                  </div>
+
+                ))}
+            </div>
+
+          </div>
+        )}
 
 
         {/* Dynamic Title */}
@@ -486,6 +503,25 @@ const AdminDashboard = ({ setPage, user, setUser }) => {
 
       </div>
       </div>
+
+      {/*Ticket Detail Modal */}
+      <AnimatePresence>
+        {selectedTicket && (
+          <TicketDetailModal
+            ticket={selectedTicket}
+            currentUser={user?.name || 'Admin'}
+            currentRole="ADMIN"
+            onClose={() => setSelectedTicket(null)}
+            onTicketUpdate={(updated) => {
+              setTickets(prev =>
+                prev.map(t => t.id === updated.id ? updated : t)
+              );
+              setSelectedTicket(updated);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
