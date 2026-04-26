@@ -103,22 +103,22 @@ const CountdownTimer = ({ targetDate }) => {
 
 const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setResourcesList }) => {
   const userName = user?.name || (typeof user === 'string' ? user : 'Guest Lecturer');
-
-  // Added ticket state management
-  //
-  const [activeTab, setActiveTab] = useState('My Tickets');
-  const [tickets, setTickets] = useState([]);
-  const [selectedTicket, setSelectedTicket] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const [showProfileModal, setShowProfileModal] = useState(false);
+   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileName, setProfileName] = useState(user?.name || (typeof user === 'string' ? user : ''));
   const [profilePassword, setProfilePassword] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileMsg, setProfileMsg] = useState('');
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
+    const saved = localStorage.getItem('lecturerNotificationsEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+
+});
+
+ useEffect(() => {
+    localStorage.setItem('lecturerNotificationsEnabled', JSON.stringify(notificationsEnabled));
+  }, [notificationsEnabled]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -150,22 +150,192 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     }
   };
 
-<<<<<<< HEAD
+  
+  // Added ticket state management
+  
+  const [activeTab, setActiveTab] = useState('Booking Resources');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [tickets, setTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null); 
+
+  
+
+  
+
+   // Dynamic Data
+  const [myBookings, setMyBookings] = useState([]); //yasith
+  const [resources, setResources] = useState([]);
+  const [buildings, setBuildings] = useState([]);
+
+  // Filter State
+  const [filters, setFilters] = useState({
+    buildingId: '',
+    capacityRange: '',
+    windowRange: '',
+    hallCategory: '',
+    facility: '',
+    date: new Date().toISOString().split('T')[0],
+    selectedSlots: []
+  });
+
+  const timeSlots = [
+    '8.00 A.M- 9.00 A.M', '9.00 A.M- 10.00 A.M', '10.00 A.M- 11.00 A.M',
+    '11.00 A.M- 12.00 P.M', '12.00 P.M- 1.00 P.M', '1.00 P.M- 2.00 P.M',
+    '2.00 P.M- 3.00 P.M', '3.00 P.M- 4.00 P.M', '4.00 P.M- 5.00 P.M',
+    '5.00 P.M- 6.00 P.M', '6.00 P.M- 7.00 P.M', '7.00 P.M- 8.00 P.M'
+  ];
+ 
+   // Catalog State
+  const [searchQuery, setSearchQuery] = useState('');
+
+  //  BOOKINGS SEARCH FILTER
+  const filteredBookings = myBookings.filter((b) =>
+    b.resource?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    b.purpose?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    b.status?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  //  ALL TICKETS SEARCH FILTER
+  const filteredTickets = tickets.filter((t) =>
+    t.issue?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.issueDesc?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.resource?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.course?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+    //  ONGOING TICKETS FILTER
+  const ongoingTickets = tickets
+    .filter(t =>
+      t.status === 'IN PROGRESS' ||
+      t.status === 'ASSIGNED' ||
+      t.status === 'OPEN'
+    )
+    .filter((t) => {
+      const query = searchQuery.toLowerCase();
+      return (
+        t.issue?.toLowerCase().includes(query) ||
+        t.issueDesc?.toLowerCase().includes(query) ||
+        t.resource?.toLowerCase().includes(query) ||
+        t.category?.toLowerCase().includes(query) ||
+        t.course?.toLowerCase().includes(query)
+      );
+    });
+
+    // Combined Filtered Resources
+  const filteredResources = resources.filter(res => {
+    // Search Query filter
+    const matchesSearch = res.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      res.type.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Building filter
+    const matchesBuilding = !filters.buildingId || res.buildingId === filters.buildingId;
+
+    // Capacity filter
+    let matchesCapacity = true;
+    if (filters.capacityRange) {
+      const [min, max] = filters.capacityRange.split('-').map(Number);
+      matchesCapacity = res.capacity >= min && res.capacity <= max;
+    }
+
+    // Window filter
+    let matchesWindow = true;
+    if (filters.windowRange) {
+      const [min, max] = filters.windowRange.split('-').map(Number);
+      matchesWindow = res.windows >= min && res.windows <= max;
+    }
+
+    // Hall Category filter
+    const matchesCategory = !filters.hallCategory || res.type === filters.hallCategory;
+
+    // Facility filter
+    const matchesFacility = !filters.facility ||
+      (res.features && res.features.toLowerCase().includes(filters.facility.toLowerCase()));
+
+    // Availability filter
+    let matchesAvailability = true;
+    if (filters.selectedSlots.length > 0) {
+      const isBooked = myBookings.some(b => 
+        b.resource === res.name && 
+        b.status === 'APPROVED' && 
+        b.date === filters.date && 
+        filters.selectedSlots.some(slot => b.time?.includes(slot))
+      );
+      matchesAvailability = !isBooked;
+    }
+
+    return matchesSearch && matchesBuilding && matchesCapacity && matchesWindow && matchesCategory && matchesFacility && matchesAvailability;
+  });
+
+
+
+  
+
+
+
+
+
+  
+
+ 
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    if (!user?.id) {
+       setProfileMsg('Error: Cannot update user lacking ID (Guest logged in).');
+       return;
+    }
+    setProfileLoading(true);
+    setProfileMsg('');
+    try {
+      const updatedUser = { ...user, name: profileName, password: profilePassword };
+      const res = await fetch(`http://localhost:8081/api/lecturers/${user.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (setUser) setUser(data);
+        setProfileMsg('Profile updated successfully!');
+        setTimeout(() => setShowProfileModal(false), 2000);
+      } else {
+        setProfileMsg('Failed to update profile.');
+      }
+    } catch (err) {
+      setProfileMsg('Error updating profile.');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+ 
    // Dynamic Data
    const [resources, setResources] = useState([]);
   const [buildings, setBuildings] = useState([]);
-=======
+ 
   // Added API integration for notifications and lecturer tickets
 
+ 
+
+
   useEffect(() => {
-    fetch(`http://localhost:8081/api/tickets/lecturer/${userName}`)
+
+        fetch('http://localhost:8081/api/bookings')
+      .then(res => res.json())
+      .then(data => setMyBookings(data))
+      .catch(console.error);
+
+      fetch(`http://localhost:8081/api/tickets/lecturer/${userName}`)
       .then(res => res.json())
       .then(setTickets)
       .catch(console.error);
->>>>>>> feature/dias/ticket-management
+ t
 
 
   useEffect(() => {
+ 
+ 
     // Initial notifications fetch
     fetch(`http://localhost:8081/api/notifications/user/${userName}`)
       .then(res => res.json())
@@ -198,10 +368,7 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     return () => clearInterval(nInterval);
   }, [userName]);
 
- // Added ticket searching and ongoing ticket filtering
-  
-  const filteredTickets = tickets.filter((t) => {
-    const q = searchQuery.toLowerCase();
+ 
 
     return (
       (t.issue || '').toLowerCase().includes(q) ||
@@ -213,23 +380,25 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
     );
   });
 
-  const ongoingTickets = tickets
-    .filter(t =>
-       t.status === 'IN PROGRESS' ||
-      t.status === 'ASSIGNED' ||
-      t.status === 'OPEN'
-    )
-    .filter((t) => {
-      const q = searchQuery.toLowerCase();
+ 
 
-      return (
-        (t.issue || '').toLowerCase().includes(q) ||
-        (t.issueDesc || '').toLowerCase().includes(q) ||
-        (t.resource || '').toLowerCase().includes(q) ||
-        (t.category || '').toLowerCase().includes(q) ||
-        (t.course || '').toLowerCase().includes(q)
-      );
-    }); 
+
+ const handleCancelBooking = async (id) => {
+    const bookingToUpdate = myBookings.find(b => b.id === id);
+    if (!bookingToUpdate) return;
+    try {
+      const res = await fetch(`http://localhost:8081/api/bookings/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...bookingToUpdate, status: 'CANCELLED' })
+      });
+      const data = await res.json();
+      setMyBookings(myBookings.map(b => b.id === id ? data : b));
+    } catch (err) { console.error(err); }
+  };
+
+
+
   const handleMarkRead = async (id) => {
     try {
       const res = await fetch(`http://localhost:8081/api/notifications/${id}/read`, { method: 'PUT' });
@@ -247,6 +416,58 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
       }
     } catch (err) { console.error(err); }
   };
+
+   const StatusBadge = ({ status }) => {
+    const styles = {
+      PENDING: 'bg-yellow-50 text-yellow-600 border-yellow-100',
+      APPROVED: 'bg-green-50 text-green-600 border-green-100',
+      REJECTED: 'bg-red-50 text-red-600 border-red-100',
+      CANCELLED: 'bg-gray-50 text-gray-500 border-gray-100',
+    };
+
+    return (
+      <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${styles[status]}`}>
+        {status}
+      </span>
+    );
+  };
+  
+
+  const handleDownloadQR = async (booking) => {
+    // Ensure all data points are present to avoid 'undefined' in QR
+    const loc = booking.resource || 'Resource';
+    const bld = booking.building || 'Campus';
+    const dt = booking.date || 'No Date';
+    const tm = booking.time || 'No Time';
+    const lect = booking.lecturer || 'Lecturer';
+
+    // Simplified format for better scanner compatibility
+    const qrData = `UNIVERSITY BOOKING PASS\n-----------------------\nRESOURCE: ${loc}\nLOCATION: ${bld}\nTIME: ${dt} | ${tm}\nLECTURER: ${lect}`;
+    
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}`;
+
+    try {
+      const response = await fetch(qrUrl);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Booking_${loc.replace(/\s+/g, '_')}_QR.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download QR code:', err);
+      // Fallback: Open in new tab if download fails
+      window.open(qrUrl, '_blank');
+    }
+  };
+
+
+
+
  // Added raise ticket feature
   const handleRaiseTicket = async (e) => {
     e.preventDefault();
@@ -405,6 +626,346 @@ const lecturerDashboard = ({ setPage, user, setUser, setSelectedBooking, setReso
           </motion.div>
         </div>
       )}
+      
+      {activeTab === 'Booking Resources' && (
+                <div className="space-y-10">
+                  <div className="mt-12 bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm mb-10">
+                    <div className="flex items-center justify-between mb-8">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                          <Filter size={20} />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900">Filter Resources</h3>
+                      </div>
+                      <button
+                        onClick={() => setFilters({
+                          buildingId: '',
+                          capacityRange: '',
+                          windowRange: '',
+                          hallCategory: '',
+                          facility: '',
+                          date: new Date().toISOString().split('T')[0],
+                          selectedSlots: []
+                        })}
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      >
+                        <Eraser size={14} />
+                        Clear All Filters
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                      {/* Building Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Building</label>
+                        <select
+                          value={filters.buildingId}
+                          onChange={(e) => setFilters({ ...filters, buildingId: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Buildings</option>
+                          {buildings.map(b => (
+                            <option key={b.id} value={b.id}>{b.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Hall Category Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Hall Category</label>
+                        <select
+                          value={filters.hallCategory}
+                          onChange={(e) => setFilters({ ...filters, hallCategory: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Categories</option>
+                          <option value="Lecture Hall">Lecture Hall</option>
+                          <option value="Lab Room">Lab Room</option>
+                          <option value="Meeting Room">Meeting Room</option>
+                        </select>
+                      </div>
+
+                      {/* Capacity Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Capacity</label>
+                        <select
+                          value={filters.capacityRange}
+                          onChange={(e) => setFilters({ ...filters, capacityRange: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">Any Capacity</option>
+                          <option value="20-30">20 - 30</option>
+                          <option value="30-60">30 - 60</option>
+                          <option value="60-100">60 - 100</option>
+                          <option value="100-150">100 - 150</option>
+                          <option value="150-200">150 - 200</option>
+                        </select>
+                      </div>
+
+                      {/* Window Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Windows</label>
+                        <select
+                          value={filters.windowRange}
+                          onChange={(e) => setFilters({ ...filters, windowRange: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">Any Windows</option>
+                          <option value="5-10">5 - 10</option>
+                          <option value="10-15">10 - 15</option>
+                          <option value="15-20">15 - 20</option>
+                        </select>
+                      </div>
+
+                      {/* Facility Filter */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Facilities</label>
+                        <select
+                          value={filters.facility}
+                          onChange={(e) => setFilters({ ...filters, facility: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-xs font-bold appearance-none cursor-pointer"
+                        >
+                          <option value="">All Facilities</option>
+                          <option value="Multimedia Projector">Multimedia Projector</option>
+                          <option value="Recording Camera">Recording Cameras</option>
+                          <option value="Smart Screen">Smart Screen</option>
+                          <option value="All Equipment">All Equipment</option>
+                        </select>
+                      </div>
+                    </div>
+
+
+
+
+                    {/* Date and Time Selection */}
+                    <div className="mt-10 pt-10 border-t border-gray-50 flex flex-col lg:flex-row gap-10">
+                      {/* Date Selection */}
+                      <div className="w-full lg:w-1/4 space-y-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Calendar size={14} className="text-primary" />
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select Date</label>
+                        </div>
+                        <input
+                          type="date"
+                          value={filters.date}
+                          min={new Date().toISOString().split('T')[0]}
+                          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-bold cursor-pointer"
+                        />
+                      </div>
+
+                      {/* Time Slots Selection */}
+                      <div className="w-full lg:w-3/4 space-y-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <Clock size={14} className="text-primary" />
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Available Time Slots</label>
+                          </div>
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full">{filters.selectedSlots.length} Selected</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                          {timeSlots.map((slot) => {
+                            const isSelected = filters.selectedSlots.includes(slot);
+                            return (
+                              <button
+                                key={slot}
+                                onClick={() => {
+                                  const newSlots = isSelected
+                                    ? filters.selectedSlots.filter(s => s !== slot)
+                                    : [...filters.selectedSlots, slot];
+                                  setFilters({ ...filters, selectedSlots: newSlots });
+                                }}
+                                className={`flex items-center gap-3 p-4 rounded-2xl border text-left transition-all group ${isSelected
+                                  ? 'bg-primary border-primary shadow-lg shadow-primary/20 scale-[0.98]'
+                                  : 'bg-white border-gray-100 hover:border-primary/30 hover:bg-gray-50'
+                                  }`}
+                              >
+                                <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${isSelected
+                                  ? 'bg-white border-white'
+                                  : 'bg-gray-50 border-gray-200 group-hover:border-primary/50'
+                                  }`}>
+                                  {isSelected && <CheckCircle2 size={12} className="text-primary" />}
+                                </div>
+                                <span className={`text-[11px] font-bold transition-colors ${isSelected ? 'text-white' : 'text-gray-600'}`}>
+                                  {slot}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-12">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-bold text-gray-900 border-l-4 border-primary pl-4">Available Specific Resources</h3>
+                      <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest bg-white px-4 py-1.5 rounded-full border border-gray-100 shadow-sm">{filteredResources.length} Results Found</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredResources.map((res) => (
+                        <div key={res.id} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all group overflow-hidden relative">
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-[5rem] -mr-8 -mt-8 group-hover:bg-primary transition-all duration-500"></div>
+
+                          <div className="flex justify-between items-start mb-6 relative z-10">
+                            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-white transition-all">
+                              {getResourceIcon(res.type)}
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${res.status === 'AVAILABLE' ? 'bg-green-50/80 text-green-600 border-green-100' : (res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE') ? 'bg-red-50/80 text-red-600 border-red-100' : 'bg-orange-50/80 text-orange-600 border-orange-100'}`}>
+                              {res.status === 'MAINTENANCE' ? 'OUT OF SERVICE' : res.status || 'AVAILABLE'}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900 mb-2 relative z-10">{res.name}</h3>
+                          <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mb-6 relative z-10">{res.type}</p>
+
+                          <div className="flex items-center gap-6 mb-8 relative z-10">
+                            <div className="flex items-center gap-2">
+                              <Users size={14} className="text-primary" />
+                              <span className="text-xs font-bold text-gray-600">{res.capacity} Seats</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin size={14} className="text-primary" />
+                              <span className="text-xs font-bold text-gray-600">{buildings.find(b => b.id === res.buildingId)?.name || 'Main Campus'}</span>
+                            </div>
+                          </div>
+
+                          {/* Resource Stats */}
+                          <div className="grid grid-cols-2 gap-3 mb-8">
+                            <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase">Windows</span>
+                              <span className="text-xs font-black text-gray-700">{res.windows} Units</span>
+                            </div>
+                            <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 flex flex-col gap-1">
+                              <span className="text-[9px] font-bold text-gray-400 uppercase">Floor</span>
+                              <span className="text-xs font-black text-gray-700">{res.floor || 'G-Floor'}</span>
+                            </div>
+                          </div>
+
+                          {/* Countdown Timer for Out of Service */}
+                          {(res.status?.toUpperCase().replace('_', ' ') === 'OUT OF SERVICE' || res.status?.toUpperCase() === 'MAINTENANCE') && (
+                            res.estimatedResolveTime ? (
+                              <CountdownTimer targetDate={res.estimatedResolveTime} />
+                            ) : (
+                              <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-2">
+                                <Info size={16} className="text-gray-400" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recovery time not set</span>
+                              </div>
+                            )
+                          )}
+                           
+
+                           //yasith
+                          <button
+                            disabled={res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE' || res.status === 'OUT_OF_SERVICE'}
+
+            
+                            onClick={async () => {
+                              if (filters.selectedSlots.length === 0) {
+                                alert("Please select at least one time slot before booking.");
+                                return;
+                              }
+                              const newBooking = {
+                                resource: res.name,
+                                date: filters.date,
+                                time: filters.selectedSlots.join(', '),
+                                purpose: 'For Lecture',
+                                status: 'PENDING',
+                                building: buildings.find(b => b.id === res.buildingId)?.name || 'Main Campus',
+                                lecturer: userName
+                              };
+                              try {
+                                const response = await fetch('http://localhost:8081/api/bookings', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify(newBooking)
+                                });
+                                const data = await response.json();
+                                setMyBookings([data, ...myBookings]);
+                                setActiveTab('My Bookings');
+                              } catch (err) { console.error(err); }
+                            }}
+                            className={`w-full font-bold py-4 rounded-2xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm ${(res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE') ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-opacity-90 shadow-primary/10 shadow-lg'}`}
+                          >
+                            {(res.status === 'MAINTENANCE' || res.status === 'OUT OF SERVICE') ? 'Out Of Service' : (
+                              <>
+                                <Plus size={18} />
+                                Book This Hall
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+               {/* 2. My Bookings Tab */}
+              {activeTab === 'My Bookings' && (
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between">
+                    <h3 className="font-bold text-gray-900">Recent Booking Requests</h3>
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white px-4 py-1.5 rounded-full border border-gray-100">
+                      View All History
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-white">
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">ID</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Resource</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Schedule</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Purpose</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
+                          <th className="px-8 py-6 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                       {filteredBookings.map(b => (
+                         <tr key={b.id} className="hover:bg-gray-50/50 transition-colors group">
+                           <td className="px-8 py-6 text-sm font-bold text-gray-500">{b.id}</td>
+                           <td className="px-8 py-6 text-sm font-bold text-gray-900">{b.resource}</td>
+                           <td className="px-8 py-6">
+                             <div className="flex flex-col">
+                               <span className="text-sm font-bold text-gray-700">{b.date}</span>
+                               <span className="text-[10px] text-gray-400 font-medium">{b.time}</span>
+                             </div>
+                           </td>
+                           <td className="px-8 py-6 text-sm font-medium text-gray-600">{b.purpose}</td>
+                           <td className="px-8 py-6 text-sm">
+                             <StatusBadge status={b.status} />
+                           </td>
+                           <td className="px-8 py-6 text-sm">
+                             {b.status === 'APPROVED' && (
+                               <button
+                                 onClick={() => {
+                                   setSelectedBooking(b);
+                                   setPage('booking-detail');
+                                 }}
+                                 className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-all font-bold text-[10px] uppercase tracking-wider"
+                               >
+                                 <QrCode size={14} />
+                                 View Pass
+                               </button>
+                             )}
+                           </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {myBookings.length === 0 && (
+                    <div className="py-20 flex flex-col items-center justify-center text-center">
+                      <Calendar size={48} className="text-gray-200 mb-4" />
+                      <p className="text-gray-400 font-medium">No bookings found</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+
+
 
        {/* Building Filter */}
                       <div className="space-y-2">
