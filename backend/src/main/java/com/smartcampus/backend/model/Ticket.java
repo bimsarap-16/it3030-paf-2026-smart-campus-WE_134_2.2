@@ -1,13 +1,27 @@
+
 package com.smartcampus.backend.model;
+
+package com.unifacility.backend.model;
+
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "tickets")
+public class Ticket {
+
+
+@Data
 @Document(collection = "tickets")
 public class Ticket {
 
@@ -18,6 +32,7 @@ public class Ticket {
     private String resource;
     private String priority;
     private String status;
+
     private String assignedTo;
     private String response;
     private String course;
@@ -143,6 +158,29 @@ public class Ticket {
         public Comment() {
         }
 
+
+    private String progressStatus = "Not Started";
+    private String assignedTo;
+
+    private String response;
+
+    // Additional fields from lecturer dashboard
+    private String course;
+    private String category;
+    private String issueDesc;
+
+    // Comments thread
+    private List<Comment> comments = new ArrayList<>();
+
+    @Data
+    public static class Comment {
+        private String id;
+        private String authorName;
+        private String authorRole;   // LECTURER | TECHNICIAN | ADMIN
+        private String text;
+        private String timestamp;
+
+
         public static Comment create(String authorName, String authorRole, String text) {
             Comment c = new Comment();
             c.setId(UUID.randomUUID().toString());
@@ -152,6 +190,7 @@ public class Ticket {
             c.setTimestamp(Instant.now().toString());
             return c;
         }
+
 
         public String getId() {
             return id;
@@ -194,3 +233,7 @@ public class Ticket {
         }
     }
 }
+
+    }
+}
+

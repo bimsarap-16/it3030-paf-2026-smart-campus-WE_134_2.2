@@ -17,4 +17,13 @@ public class Resource {
     private int windows;
     private String features;
     private String status;
+
+
+    public String getId() {
+    return id;
+}
+
+public void setId(String id) {
+    this.id = id;
+}
 }
